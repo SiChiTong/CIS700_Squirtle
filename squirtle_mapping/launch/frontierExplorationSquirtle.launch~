@@ -1,0 +1,4 @@
+<launch>
+<!-- Launch file to bringup all the frontier exploration node on squirtle -->
+	<node name="squirtle_FE" pkg="squirtle_mapping" type="frontierExplore" respawn="false" />
+</launch>
