@@ -43,11 +43,12 @@ import roslib; roslib.load_manifest('kobuki_testsuite')
 import rospy
 from kobuki_msgs.msg import ButtonEvent
 from kobuki_msgs.msg import Led
+import os
 
 class kobuki_button():
 
 	def __init__(self):
-		rospy.init_node("kobuki_buttonsANDled")	
+		rospy.init_node("kobuki_buttonLedTest")	
 
 		#monitor kobuki's button events
 		rospy.Subscriber("/mobile_base/events/button",ButtonEvent,self.ButtonEventCallback)
@@ -78,10 +79,12 @@ class kobuki_button():
 			button = "B1"
 			leds[0].value = Led.ORANGE
 			leds[1].value = Led.RED
+			os.system("rosrun turtlesim turtlesim_node");
 		else:
 			button = "B2"
 			leds[0].value = Led.BLACK
 			leds[1].value = Led.BLACK
+			os.system("rosnode kill turtlesim_node");
 		pub[0].publish(leds[0])
 		pub[1].publish(leds[1])
 		rospy.loginfo("Button %s was %s."%(button, state))
@@ -91,3 +94,4 @@ if __name__ == '__main__':
 		kobuki_button()
 	except rospy.ROSInterruptException:
 		rospy.loginfo("exception")
+
