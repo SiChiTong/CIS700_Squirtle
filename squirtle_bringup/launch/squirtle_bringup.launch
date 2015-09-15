@@ -8,6 +8,9 @@
 
 	<include file ="$(find turtlebot_bringup)/launch/minimal.launch"/>
 
+    <!-- Node to publish fake laser scan to remove NaN's and publish max range of 10m instead -->
+	<node pkg="squirtle_mapping" type="fake_laser.py" name="fake_laser" output="screen" respawn="false"/>
+
 	<include file ="$(find turtlebot_navigation)/launch/gmapping_demo.launch"/>
 
     <group if="$(arg frontier_explore)">
