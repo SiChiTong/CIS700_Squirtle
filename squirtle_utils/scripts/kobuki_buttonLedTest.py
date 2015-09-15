@@ -1,4 +1,63 @@
-#!/usr/bin/env python
+# Monitor the kobuki's button status
+
+import roslib; roslib.load_manifest('kobuki_testsuite')
+import rospy
+from kobuki_msgs.msg import ButtonEvent
+from kobuki_msgs.msg import Led
+import os
+
+class kobuki_button():
+	def __init__(self):
+		self.flag = 1;
+		rospy.init_node("kobuki_buttonLedTest")	
+
+		#monitor kobuki's button events
+		rospy.Subscriber("/mobile_base/events/button",ButtonEvent,self.ButtonEventCallback)
+
+		#rospy.spin() tells the program to not exit until you press ctrl + c.  If this wasn't there... it'd subscribe and then immediatly exit (therefore stop "listening" to the thread).
+		rospy.spin();
+	
+	def ButtonEventCallback(self,data):
+		pub = []
+		pub.append(rospy.Publisher('/mobile_base/commands/led1',Led))
+		pub.append(rospy.Publisher('/mobile_base/commands/led2',Led))
+		rate = rospy.Rate(1)
+		leds = []
+		leds.append(Led())
+		leds.append(Led())
+		#LED STUFF
+		if ( data.state == ButtonEvent.RELEASED ):
+			state = "released"
+			leds[0].value = Led.BLACK
+			leds[1].value = Led.BLACK
+		else:
+			state = "pressed"  
+		if ( data.button == ButtonEvent.Button0 ):
+			button = "B0"
+			leds[0].value = Led.GREEN
+			leds[1].value = Led.ORANGE
+		elif ( data.button == ButtonEvent.Button1 ):
+			button = "B1"
+			leds[0].value = Led.ORANGE
+			leds[1].value = Led.RED
+			if (self.flag == 1):
+				os.system("rosrun turtlesim turtlesim_node &");
+				self.flag = 0;
+		else:
+			button = "B2"
+			leds[0].value = Led.BLACK
+			leds[1].value = Led.BLACK
+			os.system("rosnode kill /turtlesim");
+		pub[0].publish(leds[0])
+		pub[1].publish(leds[1])
+		rospy.loginfo("Button %s was %s."%(button, state))
+
+if __name__ == '__main__':
+	try:
+		kobuki_button()
+	except rospy.ROSInterruptException:
+		rospy.loginfo("exception")
+
 
 # This script is inspired by https://github.com/yujinrobot/kobuki/blob/f99e495b2b3be1e62495119809c58ccb58909f67/kobuki_testsuite/scripts/test_events.py
 # They deserve all the credit therefore I'm including their copyright notice / BSD - Mark Silliman
@@ -36,62 +95,3 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 '''
-
-# Monitor the kobuki's button status
-
-import roslib; roslib.load_manifest('kobuki_testsuite')
-import rospy
-from kobuki_msgs.msg import ButtonEvent
-from kobuki_msgs.msg import Led
-import os
-
-class kobuki_button():
-
-	def __init__(self):
-		rospy.init_node("kobuki_buttonLedTest")	
-
-		#monitor kobuki's button events
-		rospy.Subscriber("/mobile_base/events/button",ButtonEvent,self.ButtonEventCallback)
-
-		#rospy.spin() tells the program to not exit until you press ctrl + c.  If this wasn't there... it'd subscribe and then immediatly exit (therefore stop "listening" to the thread).
-		rospy.spin();
-	
-	def ButtonEventCallback(self,data):
-		pub = []
-		pub.append(rospy.Publisher('/mobile_base/commands/led1',Led))
-		pub.append(rospy.Publisher('/mobile_base/commands/led2',Led))
-		rate = rospy.Rate(1)
-		leds = []
-		leds.append(Led())
-		leds.append(Led())
-		#LED STUFF
-		if ( data.state == ButtonEvent.RELEASED ):
-			state = "released"
-			leds[0].value = Led.BLACK
-			leds[1].value = Led.BLACK
-		else:
-			state = "pressed"  
-		if ( data.button == ButtonEvent.Button0 ):
-			button = "B0"
-			leds[0].value = Led.GREEN
-			leds[1].value = Led.ORANGE
-		elif ( data.button == ButtonEvent.Button1 ):
-			button = "B1"
-			leds[0].value = Led.ORANGE
-			leds[1].value = Led.RED
-			os.system("rosrun turtlesim turtlesim_node");
-		else:
-			button = "B2"
-			leds[0].value = Led.BLACK
-			leds[1].value = Led.BLACK
-			os.system("rosnode kill /turtlesim");
-		pub[0].publish(leds[0])
-		pub[1].publish(leds[1])
-		rospy.loginfo("Button %s was %s."%(button, state))
-
-if __name__ == '__main__':
-	try:
-		kobuki_button()
-	except rospy.ROSInterruptException:
-		rospy.loginfo("exception")
-
