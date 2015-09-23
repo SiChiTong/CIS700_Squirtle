@@ -168,4 +168,7 @@ include_directories(
 
 add_executable(frontierExplore src/frontierExplore.cpp)
 target_link_libraries(frontierExplore ${catkin_LIBRARIES})
+add_executable(laser_tf src/lasre_tf.cpp)
+target_link_libraries(laser_tf ${catkin_LIBRARIES})
+
 add_dependencies(frontierExplore ${catkin_EXPORTED_TARGETS})
