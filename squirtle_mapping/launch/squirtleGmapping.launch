@@ -1,0 +1,24 @@
+<launch>
+
+  <!-- Node to run RPLIDAR -->
+    <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
+      <param name="serial_port"         type="string" value="/dev/ttyUSB0"/>
+      <param name="serial_baudrate"     type="int"    value="115200"/>
+      <param name="frame_id"            type="string" value="laser"/>
+      <param name="inverted"            type="bool"   value="false"/>
+      <param name="angle_compensate"    type="bool"   value="true"/>
+    </node>
+
+
+  <!-- Node to publish tf from laser to base_link>
+  <ndoe name="laser_tf" pkg="squirtle_mapping" type="laser_tf">
+
+  
+    <include file="$(find squirtle_mapping)/launch/includes/gmapping.launch.xml">
+      <arg name="scan_topic" value="/scan" />
+    </include>
+
+    <include file="$(find squirtle_mapping)/launch/includes/move_base.launch.xml"/>
+
+</launch>
+
