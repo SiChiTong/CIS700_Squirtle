@@ -98,7 +98,7 @@ void detectAndDisplay( Mat frame )
 
      resize(faceROI, faceROI, Size(100,100));
      imshow( "Display window", faceROI ); 
-     //printf("height:%d width:%d \n", faceROI.rows, faceROI.cols);
+    //printf("height:%d width:%d \n", faceROI.rows, faceROI.cols);
     //-- In each face, detect smiles
     // std::vector<Rect> smiles;
     // smile_cascade.detectMultiScale( faceROI, smiles, 1.1, 2, 0 |CV_HAAR_SCALE_IMAGE, Size(30, 30) );

@@ -201,13 +201,16 @@ add_dependencies(opencv_image opencv_files_generate_messages_cpp)
 
 add_executable(test_video src/07video.cpp)
 target_link_libraries(test_video ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(test_video opencv_demo_generate_messages_cpp)
+add_dependencies(test_video opencv_files_generate_messages_cpp)
 
 add_executable(test_face src/face3.cpp)
 target_link_libraries(test_face ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(test_face opencv_demo_generate_messages_cpp)
+add_dependencies(test_face opencv_files_generate_messages_cpp)
 
 add_executable(face_node src/face_node.cpp)
 target_link_libraries(face_node ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
-add_dependencies(face_node opencv_demo_generate_messages_cpp)
+add_dependencies(face_node opencv_files_generate_messages_cpp)
 
+add_executable(demo src/debug.cpp)
+target_link_libraries(demo ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(demo opencv_files_generate_messages_cpp)

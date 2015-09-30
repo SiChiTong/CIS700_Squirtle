@@ -16,8 +16,8 @@ class ImageConverter{
     public:
     ImageConverter() : it_(nh_){
         // Subscrive to input video feed and publish output video feed
-        image_sub_ = it_.subscribe("/camera/rgb/image_color", 1, &ImageConverter::imageCb, this);
-        //image_sub_ = it_.subscribe("/camera/image_raw", 1, &ImageConverter::imageCb, this);
+        //image_sub_ = it_.subscribe("/camera/rgb/image_color", 1, &ImageConverter::imageCb, this);
+        image_sub_ = it_.subscribe("/camera/rgb/image_raw", 1, &ImageConverter::imageCb, this);
         image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
         cv::namedWindow(OPENCV_WINDOW);
@@ -39,8 +39,9 @@ class ImageConverter{
         }
 
         // Draw an example circle on the video stream
-        if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60)
+        if (cv_ptr->image.rows > 60 && cv_ptr->image.cols > 60){
             cv::circle(cv_ptr->image, cv::Point(50, 50), 10, CV_RGB(255,0,0));
+        }
 
         // Update GUI Window
         cv::imshow(OPENCV_WINDOW, cv_ptr->image);
