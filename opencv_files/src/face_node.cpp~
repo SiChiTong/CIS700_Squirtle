@@ -18,7 +18,6 @@ CascadeClassifier face_cascade;
 CascadeClassifier eyes_cascade;
 
 static const std::string OPENCV_WINDOW = "Image window";
-static const std::string OPENCV_FACE = "Face window";
 
 class ImageConverter{
     ros::NodeHandle nh_;
@@ -80,8 +79,7 @@ class ImageConverter{
             // Output modified video stream
             img_msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", faceROI).toImageMsg();
             image_pub_.publish(img_msg);
-	
-			imshow(OPENCV_FACE, faceROI );
+
           //}
         }
         // Update GUI Window
