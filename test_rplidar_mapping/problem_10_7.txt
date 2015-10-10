@@ -1,0 +1,12 @@
+Problem with current mapping:
+	
+	1. The mirror places
+	2. When we test the turtlebot in the corridor, it often goes offline(teleop and laser data streaming)
+	3. The rotation speed should be slow to map correctly. (less than 1.5 in teleop should be safe)
+
+
+TODO:
+	Continue to test gmapping and mapping with kinect, tune them and pick the one that perform best.
+	Frontier exploration
+
+	

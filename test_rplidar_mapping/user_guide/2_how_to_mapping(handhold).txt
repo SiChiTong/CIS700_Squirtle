@@ -1,0 +1,38 @@
+1. Installation
+	copy the folder "rplidar_ros" and "hector_slam" into your ~/catkin_ws/src and do catkin_make. (rplidar_ros from https://github.com/robopeak/rplidar_ros, hector_slam from https://github.com/tu-darmstadt-ros-pkg/hector_slam but added new launch file for this test)
+
+2. Connect the rplidar to usb, the motor should be spinning now. 
+
+3. Change the permission of rplidar port by: 
+	$sudo chmod 0666 /dev/ttyUSB*
+	or 
+	you can achieve this by adding udev rule "KERNEL=="ttyUSB*", MODE="0666"" to /etc/udev/rules.d/ 
+
+	NOTE: by default the rplidar launch file gets data from ttyUSB0 port(you can change it in rplidar_ros/launch/rplidar.launch file)
+
+4. Run rplidar launch file to publish data to /scan topic
+	$roslaunch rplidar_ros rplidar.launch
+	NOTE: if it gets an error in this step, make sure your USB port is setted correctly.
+
+5. Run the hector_mapping
+	 open another terminal and run:
+	 $roslaunch hector_mapping mapping_my_rplidar.launch
+	 note: by default hector_mapping uses odom frame "nav" and base frame "base_footprint", since we are doing mapping with handhold, there is no odom data, we set these parameters to :
+	<param name="base_frame" value="laser" />
+    <param name="odom_frame" value="laser" />
+
+6. visualize the map.
+	open another terminal and run:
+	$rosrun rviz rviz
+	set global fixed frame to "map" (default)
+	add Laserscan and set its topic to /scan (in which rplidar publishes lidar data)
+	add map and set its topic to map 
+	now you should see the map published by hector_mapping, move around and see the map updating!!
+
+
+NOTE: this guide provides raw steps to help you understand whats going on in each step. 
+	A intergrated launch file will be provided later.
+
+NOTE: In this test, hold the lidar horizontally and move around slowly(especially the orientation should be moved slowly since this test does not combine odometry data, otherwise mapping will be wrong)
+
+NOTE: mirror area is often not correct

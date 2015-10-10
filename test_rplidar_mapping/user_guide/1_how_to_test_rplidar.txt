@@ -1,0 +1,28 @@
+1. Installation
+	copy the folder "rplidar_ros" into your ~/catkin_ws/src folder and do catkin_make to build. (rplidar_ros is from https://github.com/robopeak/rplidar_ros)
+
+2. Connect the rplidar to usb, the motor should be spinning now. 
+
+3. Change the permission of rplidar port by: 
+	$sudo chmod 0666 /dev/ttyUSB*
+	or 
+	you can achieve this by adding udev rule "KERNEL=="ttyUSB*", MODE="0666"" to /etc/udev/rules.d/ 
+
+	note: by default the rplidar launch file gets data from ttyUSB0 port(you can change it in rplidar_ros/launch/rplidar.launch file)
+
+4. Run rplidar launch file. 
+	$roslaunch rplidar_ros rplidar.launch
+
+5. Set up rviz.
+	open another terminal and run:
+	$rosrun rviz rviz
+	set global fixed frame to "laser" (by default rplidar sets frame id to "laser", you can change it in rplidar_ros/launch/rplidar.launch)
+	add Laserscan and set its topic to /scan (in which rplidar publishes lidar data)
+	now you can visualize ridar data in rviz
+
+
+
+NOTE: this guide provides raw steps to help you understand whats going on in each step. 
+	A intergrated launch file will be provided later.
+
+ 

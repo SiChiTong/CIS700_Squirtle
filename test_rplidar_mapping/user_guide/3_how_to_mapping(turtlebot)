@@ -1,0 +1,55 @@
+This guide assumes that you have set your workstation and turtlebot network, and that you have read previous guide.
+
+1. Installation
+	install hector_mapping in workstation. 
+	install rplidar_ros in turtlebot
+
+2. Connect the rplidar to usb, the motor should be spinning now. 
+
+3. Change the permission of rplidar port by: 
+	$sudo chmod 0666 /dev/ttyUSB*
+	or 
+	you can achieve this by adding udev rule "KERNEL=="ttyUSB*", MODE="0666"" to /etc/udev/rules.d/ 
+
+	NOTE: by default the rplidar launch file gets data from ttyUSB0 port(you can change it in rplidar_ros/launch/rplidar.launch file)
+	NOTE: usually because turtlebot compute also connect to base using usb, the ttyUSB? port may have changed. So you may need to change the launch file accordingly. 
+	or (TODO) set specific udev rules to ease this step.
+
+4. Bring up turtlebot (in Turtlebot)
+
+4. Run rplidar launch file to publish data to /scan topic (in Turtlebot)
+	$roslaunch rplidar_ros rplidar.launch
+	but there are some changes in rplidar.launch:
+		"frame_id" set to "base_link" (NOTE: this is only for simplification. In future it should be "laser", and there should be tf published from "laser" to "base_link" )
+		"serial_port" set to the port that rplidar connects.
+
+	NOTE: if it gets an error in this step, make sure your USB port is setted correctly.
+
+5. Run the hector_mapping (in workstation)
+	 open another terminal and run:
+	 $roslaunch hector_mapping mapping_turtlebot_rplidar.launch
+	 there are a few parameters that need to change (chose by careful tuning for rplidar)
+	<param name="map_resolution" value="0.025"/>
+	<param name="map_multi_res_levels" value="5" />
+	<param name="base_frame" value="base_link" />
+	<param name="odom_frame" value="base_link" />
+
+6. visualize the map.
+	open another terminal and run:
+	$rosrun rviz rviz
+	set global fixed frame to "map" (default)
+	add Laserscan and set its topic to /scan (in which rplidar publishes lidar data)
+	add map and set its topic to map 
+	add some tf
+
+
+NOTE: this guide provides raw steps to help you understand whats going on in each step. 
+	A intergrated launch file will be provided later.
+
+NOTE: mirror area is often not correct
+
+TUNING advice for hector_mapping: (just from experience)
+	There are some key parameters that should be tuned:
+	map_resolution -- when this is too high it will often not able to match map, so that creating some ugly maps, when this is too low it will contain less information for turtlebot navigation.
+	map_multi_res_levels -- default is 2, a high-resolution map will need it to be larger than 2 to be robust. 4~6 should be decent for a resolution of 0.25
+	map_update_distance_thresh and map_update_angle_thresh -- these threshhold will control whether it will update map when moving quickly.
