@@ -211,6 +211,10 @@ add_executable(face_node src/face_node.cpp)
 target_link_libraries(face_node ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(face_node opencv_files_generate_messages_cpp)
 
+add_executable(tabletop_detector src/tabletop_node.cpp)
+target_link_libraries(tabletop_detector ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(tabletop_detector opencv_files_generate_messages_cpp)
+
 add_executable(demo src/debug.cpp)
 target_link_libraries(demo ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(demo opencv_files_generate_messages_cpp)
