@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+  <include file="$(find hector_mapping)/launch/mapping_turtlebot_rplidar.launch" />
+
+</launch>
