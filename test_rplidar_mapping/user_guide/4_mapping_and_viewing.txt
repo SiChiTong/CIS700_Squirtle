@@ -1,0 +1,26 @@
+This guide is to help you if you want to:
+	--run rplidar and hector_mapping node on turtlebot computer
+	--view the mapping process on remote computer using rviz
+
+
+PREPARATION: copy the folder "hector_slam", "mapping_launch", "rplidar_ros" into your catkin_ws and do catkin_make 
+
+1. first make sure you have already added the rplidar rules by running the bash file provided:
+	$ (cd to test_rplidar_mapping folder with "setup_rplidar.bash inside")
+	$ sudo bash setup_rplidar.bash
+
+	this process will set the rplidar rules(make it at /dev/rplidar), and chmod it to "0666", otherwise rplidar won't connect to ros
+
+2. (on your turtlebot computer) run the combo mapping launch file
+	$ roslaunch mapping_launch mapping_turtlebot_rplidar.launch
+
+	this process will start the rplidar node and hector_mapping node on your turtlebot and publishes data to ros
+
+3. (on your remote computer) Now you are free to view the mapping, run launch file 
+ 	$ roslanch mapping_launch view_mapping_rviz.launch
+
+ 	this process will start the rviz and view the mapping process
+
+4. Now you are free to control the turtlebot around and it will update the map for you!
+
+
