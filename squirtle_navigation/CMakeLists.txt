@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -187,3 +188,8 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+add_executable(laserTF src/LaserTf.cpp)
+target_link_libraries(laserTF ${catkin_LIBRARIES})
+add_dependencies(laserTF ${catkin_EXPORTED_TARGETS})
