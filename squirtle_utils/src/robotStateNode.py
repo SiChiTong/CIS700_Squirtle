@@ -41,6 +41,16 @@ class robotState():
 		'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
 	}
 
+	self.killSubroutines = {
+		'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+		'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+		'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+		'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+		'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+		'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+		'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
+	}
+
 	def __init__(self):
 		# Setup the publishers and subscribers
 		rospy.init_node("robotStateNode", anonymous=True)	
@@ -53,21 +63,22 @@ class robotState():
 
 			# Monitor the status of the current subroutine constantly and act accordingly
 			if (self.subroutineStatus == "complete"):
-				os.system("rosnode kill all")
+				os.system(self.killSubroutines(currentSubroutine))
 				taskStatus = "success"
-				pub.publish(taskStatus)
+				self.StatePub.publish(taskStatus)
 				return
 
 			elif (self.subroutineStatus == "error"):
-				os.system("rosnode kill all")
+				os.system(self.killSubroutines(currentSubroutine))
+				# Nodes may get reset, you will lose data
 				taskStatus = "fail"
 				os.system("Find Why you failed and act accordingly?")
 				# Shaky ground here, not sure how the three different fail modes are handled
-				pub.publish(taskStatus)
+				self.StatePub.publish(taskStatus)
 
 			else
 				taskStatus = "in progress"
-				pub.publish(taskStatus)
+				self.StatePub.publish(taskStatus)
 
 			rate.sleep()
 
