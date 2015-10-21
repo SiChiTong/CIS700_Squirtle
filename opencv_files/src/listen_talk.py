@@ -19,6 +19,8 @@ import time
 from kobuki_msgs.msg import SensorState
 from std_msgs.msg import String
 from std_msgs.msg import Bool
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge, CvBridgeError
 
 class my_process():
 
@@ -33,7 +35,7 @@ class my_process():
 
 
 	def SensorPowerEventCallback(self,data):
-		float(data.battery)
+		print data
 
 		my_message = "hey!"
 
