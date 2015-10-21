@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-
-import rospy
-
-
-
 '''
 Node to send navigation status to the robot state
 by Siddharth Srivatsa
@@ -30,7 +25,7 @@ uint8 LOST               # An action client can determine that a goal is LOST. T
 
 '''
 
-
+import rospy
 import roslib
 import rospy
 import os
