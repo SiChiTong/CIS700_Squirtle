@@ -30,41 +30,46 @@ import roslib
 import rospy
 import os
 import time
+import sys
 from std_msgs.msg import String
 from std_msgs.msg import Bool
-from actionlib_msgs import GoalStatusArray
+from actionlib_msgs.msg import GoalStatusArray
 
-class subsroutinestatus {
-	self.subRoutineStatus = None
+class subsroutinestatus:
 
-	self.status = {
-		'PENDING' : 'in progress' 
-		'ACTIVE' : 'in progress'
-		'SUCCEEDED' : 'complete'
-		'PREEMPTED' : 'fail'
-		'ABORTED' : 'fail'
-		'REJECTED' : 'fail'
-		'PREEMPTING' : 'fail'
-		'RECALLING' : 'fail'
-		'RECALLED' : 'fail'
+	def __init__(self, argument):
+		self.subRoutineStatus = 'LOST'
+
+		self.status = {
+		'PENDING' : 'in progress',
+		'ACTIVE' : 'in progress',
+		'SUCCEEDED' : 'complete',
+		'PREEMPTED' : 'fail',
+		'ABORTED' : 'fail',
+		'REJECTED' : 'fail',
+		'PREEMPTING' : 'fail',
+		'RECALLING' : 'fail',
+		'RECALLED' : 'fail',
 		'LOST' : 'fail'
-	}
-	
-	def __init__(self):
+		}
+
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)	
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
-		self.SubRoutineStatusSub = rospy.subscriber('\status_list', GoalStatusArray, SubRoutineStatusCallBack)
+		self.SubRoutineStatusSub = rospy.Subscriber('\status_list', GoalStatusArray, self.SubRoutineStatusCallBack)
 		rate = rospy.Rate(10) # Publish at 10hz
 		
 		while not rospy.is_shutdown():
-			SubRoutineStatusPub.publish(status(subRoutineStatus))
+			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 			rate.sleep()
 
-		rospy.spin();
+		rospy.spin()
 
-
-	def SubRoutineStatusCallBack(data data):
+	def SubRoutineStatusCallBack(self, data):
 		subRoutineStatus = data.text
 
-}
+if __name__=="__main__":
+    if len(sys.argv) != 2:
+        print("usage: my_node.py arg1")
+    else:
+        subsroutinestatus(sys.argv[1])
