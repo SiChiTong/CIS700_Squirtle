@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 
-
-import rospy
-
-
-
 '''
 Node to keep track of Robot state 
 by Siddharth Srivatsa
 
+# Flags to send to the Task List - "in progress",  "success", "fail"
+# Status messages to receive from the individual subroutines "complete", "error"
+# Function to call individual subroutines (Takes in name of the subroutine as as argument and calls the corresponfing launch file)
 '''
 
-
+import rospy
 import roslib
 import rospy
 import os
@@ -20,38 +18,8 @@ from std_msgs.msg import String
 from std_msgs.msg import Bool
 
 
-class robotState():
-	
-	# Flags to send to the Task List - "in progress",  "success", "fail"
-	# Status messages to receive from the individual subroutines "complete", "error"
-	# Function to call individual subroutines (Takes in name of the subroutine as as argument and calls the corresponfing launch file)
-	self.currentTask = None
-	self.subroutineStatus = None
-	self.taskStatus = None
-	self.currentSubroutine = None
-
-	# Maintain a list of subroutines to be called for each sub task the TaskList sends
-	self.subroutines = {
-		'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
-		'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/quirtleNavigation.launch'
-		'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
-		'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
-		'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
-		'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
-		'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch'
-	}
-
-	self.killSubroutines = {
-		'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-		'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-		'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-		'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-		'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-		'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-		'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh'
-	}
-
-	def __init__(self):
+class robotStateNode():
+	def robotState(self):
 		# Setup the publishers and subscribers
 		rospy.init_node("robotStateNode", anonymous=True)	
 		self.StatePub = rospy.Publisher('RobotState', String, queue_size=10)
@@ -76,7 +44,7 @@ class robotState():
 				# Shaky ground here, not sure how the three different fail modes are handled
 				self.StatePub.publish(taskStatus)
 
-			else
+			else:
 				taskStatus = "in progress"
 				self.StatePub.publish(taskStatus)
 
@@ -86,18 +54,49 @@ class robotState():
 
 
 	# Start a new subroutine you receive a new message from the TaskList
-	def TaskListMessageCallback(data data):
+	def TaskListMessageCallback(self, data):
 		self.currentTask = data.data
-		self.currentSubroutine = self.subroutines(currentTask)
-		os.system(currentSubroutine)
+		self.currentTask = self.currentTask.split()
+		self.currentSubroutine = self.subroutines(self.currentTask[0])
+		parameterString = ""
+		for i in range(1,len(self.currentTask)):
+			parameterString = parameterString + "P" + str(i) + ":= " + self.currentTask[i] + " "			# For each paramter convert it to a string to make it a system call
+		os.system(currentSubroutine + " " + parameterString)
 
 	# Get the status of the subRoutine
-	def SubroutineStatusMessageCallback(data data):
+	def SubroutineStatusMessageCallback(self, data):
 		self.subroutineStatus = data.data
 
+	def __init__(self):
+		self.currentTask = None
+		self.subroutineStatus = None
+		self.taskStatus = None
+		self.currentSubroutine = None
+		self.robotState()
+
+		# Maintain a list of subroutines to be called for each sub task the TaskList sends
+		self.subroutines = {
+			'go_to_room' : 'roslaunch squirtle_navigation SquirtleNavigation.launch',
+			# 'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/quirtleNavigation.launch',
+			# 'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			# 'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+		}
+
+		self.killSubroutines = {
+			'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			# 'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			# 'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			# 'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+		}
 
 if __name__ == '__main__':
 	try:
-		tasklist()
+		robotStateNode()
 	except rospy.ROSInterruptException:
-		rospy.loginfo("exception in robotStateNode")
+		rospy.loginfo("Exception in robotStateNode")
