@@ -1,6 +1,6 @@
 <launch>
   <node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" output="screen">
-  <param name="serial_port"         type="string" value="/dev/ttyUSB1"/>  
+  <param name="serial_port"         type="string" value="/dev/rplidar"/>  
   <param name="serial_baudrate"     type="int"    value="115200"/>
   <param name="frame_id"            type="string" value="laser"/>
   <param name="inverted"            type="bool"   value="false"/>
@@ -8,6 +8,6 @@
   </node>
   
   <!-- Static tf publisher between /base_link and /laser -->
-  <node pkg="tf" type="static_transform_publisher" name="laser_tf_publisher" args="0 0 0.25 0 0 0 /base_link /laser 100" /> 
+  <node pkg="tf" type="static_transform_publisher" name="laser_tf_publisher" args="0 0 0.22 0 0 0 /base_link /laser 100" /> 
 
 </launch>
