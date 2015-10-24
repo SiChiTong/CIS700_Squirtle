@@ -57,11 +57,14 @@ class robotStateNode():
 	def TaskListMessageCallback(self, data):
 		self.currentTask = data.data
 		self.currentTask = self.currentTask.split()
-		self.currentSubroutine = self.subroutines(self.currentTask[0])
+		self.currentSubroutine = self.subroutines[self.currentTask[0]]
 		parameterString = ""
 		for i in range(1,len(self.currentTask)):
-			parameterString = parameterString + "P" + str(i) + ":= " + self.currentTask[i] + " "			# For each paramter convert it to a string to make it a system call
-		os.system(currentSubroutine + " " + parameterString)
+			parameterString = parameterString + "P" + str(i) + ":=" + self.currentTask[i] + " "			# For each paramter convert it to a string to make it a system call
+		if (self.taskStatus != "in progress"):
+			os.system(self.currentSubroutine + " " + parameterString)
+			print(self.currentSubroutine + " " + parameterString)
+		self.taskStatus = "in progress"
 
 	# Get the status of the subRoutine
 	def SubroutineStatusMessageCallback(self, data):
@@ -72,7 +75,6 @@ class robotStateNode():
 		self.subroutineStatus = None
 		self.taskStatus = None
 		self.currentSubroutine = None
-		self.robotState()
 
 		# Maintain a list of subroutines to be called for each sub task the TaskList sends
 		self.subroutines = {
@@ -85,15 +87,16 @@ class robotStateNode():
 			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
 		}
 
-		self.killSubroutines = {
-			'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+		# self.killSubroutines = {
+			# 'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
-		}
+		# }
+		self.robotState()
 
 if __name__ == '__main__':
 	try:

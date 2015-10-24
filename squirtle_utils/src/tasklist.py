@@ -22,24 +22,23 @@ from std_msgs.msg import Bool
 from collections import deque
 
 class tasklist():
-
-	self.history = deque([])
-	self.command_queue = deque([])
-	self.server_list =[]
 	
 	def __init__(self):
 		# setup
+		self.history = deque([])
+		self.command_queue = deque(["go_to_room vending_machine", "retrieve_object diet_coke", "go_to_room GRASP_Lab"])
+		self.server_list =[]
 		rospy.init_node("tasklist")	
 		self.pub = rospy.Publisher('current_task', String, queue_size=10)
-		self.sub = rospy.Subscriber("/serverstuff",String,self.ServerMessageCallback)
-		self.sub2 = rospy.Subscriber("/RobotState",String,self.RobotStateCallback)
+		# self.sub = rospy.Subscriber("/serverstuff",String,self.ServerMessageCallback)
+		# self.sub2 = rospy.Subscriber("/RobotState",String,self.RobotStateCallback)
 		rate = rospy.Rate(10) # 10hz
+		while not rospy.is_shutdown():
+			if len(self.command_queue)>0:
+				self.pub.publish(self.command_queue[0])
+				rate.sleep()
 
-		if len(self.command_queue)>0:
-			pub.publish(self.command_queue[0])
-			rate.sleep()
-
-		rospy.spin();
+		# rospy.spin();
 
 
 	def ServerMessageCallback(self,data):
@@ -59,7 +58,7 @@ class tasklist():
 			# store the completed task in the history
 			self.history.append(completed_task)
 			
-		elif data.data=="fail":
+		#elif data.data=="fail":
 		
 		else:
 			print("The robot state is trying to confuse me")

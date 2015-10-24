@@ -52,7 +52,9 @@ class subsroutinestatus:
 		'RECALLED' : 'fail',
 		'LOST' : 'fail'
 		}
+		self.subroutine(argument)
 
+	def subroutine(self, argument):
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)	
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
@@ -60,16 +62,15 @@ class subsroutinestatus:
 		rate = rospy.Rate(10) # Publish at 10hz
 		
 		while not rospy.is_shutdown():
-			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+			self.SubRoutineStatusPub.publish(argument)
 			rate.sleep()
-
 		rospy.spin()
 
 	def SubRoutineStatusCallBack(self, data):
 		subRoutineStatus = data.text
 
 if __name__=="__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 4:
         print("usage: my_node.py arg1")
     else:
         subsroutinestatus(sys.argv[1])
