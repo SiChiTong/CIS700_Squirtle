@@ -6,7 +6,7 @@
   <arg name="P1" default="GRASP_Lab"/>
 
   <!-- Launch the node that communicates between the subroutines -->
-  <node name="subsroutinestatus" type="subsroutinestatus" pkg="squirtle_navigation" args="$(arg P1)" />
+  <node name="subsroutineStatus" type="subroutineStatus.py" pkg="squirtle_navigation" args="$(arg P1)" />
 
   <include file="$(find rplidar_ros)/launch/rplidar.launch" />
 
