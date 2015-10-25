@@ -38,8 +38,8 @@ from actionlib_msgs.msg import GoalStatusArray
 class subsroutinestatus:
 
 	def __init__(self, argument):
-		self.subRoutineStatus = 'LOST'
-
+		self.subRoutineStatus = 'Not Initialized'
+		self.subRoutineStatus = "ACTIVE"
 		self.status = {
 		'PENDING' : 'in progress',
 		'ACTIVE' : 'in progress',
@@ -58,16 +58,17 @@ class subsroutinestatus:
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)	
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
-		self.SubRoutineStatusSub = rospy.Subscriber('\status_list', GoalStatusArray, self.SubRoutineStatusCallBack)
+		#self.SubRoutineStatusSub = rospy.Subscriber('/status_list', GoalStatusArray, self.SubRoutineStatusCallBack)
+		self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
 		rate = rospy.Rate(10) # Publish at 10hz
 		
 		while not rospy.is_shutdown():
-			self.SubRoutineStatusPub.publish(argument)
+			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 			rate.sleep()
 		rospy.spin()
 
 	def SubRoutineStatusCallBack(self, data):
-		subRoutineStatus = data.text
+		self.subRoutineStatus = data.data
 
 if __name__=="__main__":
     if len(sys.argv) != 4:
