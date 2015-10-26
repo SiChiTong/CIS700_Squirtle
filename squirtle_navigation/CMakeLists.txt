@@ -194,3 +194,7 @@ include_directories(
 add_executable(laserTF src/LaserTf.cpp)
 target_link_libraries(laserTF ${catkin_LIBRARIES})
 add_dependencies(laserTF ${catkin_EXPORTED_TARGETS})
+
+add_executable(goToGoal src/goToGoal.cpp)
+target_link_libraries(goToGoal ${catkin_LIBRARIES})
+add_dependencies(goToGoal ${catkin_EXPORTED_TARGETS})
