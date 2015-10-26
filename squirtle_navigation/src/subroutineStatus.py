@@ -54,16 +54,35 @@ class subsroutinestatus:
 		}
 		self.subroutine(argument)
 
+		self.roomToGoal = {
+		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0],
+		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0],
+		'bump_space' : [-14.9074779785, 15.5285880624, 0.0],
+		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0]
+		}
+
 	def subroutine(self, argument):
 		# Setup the publishers and subscribers
-		rospy.init_node("subsroutinestatus", anonymous=True)	
+		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
+		self.goalPub = rospy.Publisher('goToPoint', Pose, queue_size=10)
 		#self.SubRoutineStatusSub = rospy.Subscriber('/status_list', GoalStatusArray, self.SubRoutineStatusCallBack)
 		self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
 		rate = rospy.Rate(10) # Publish at 10hz
 		
 		while not rospy.is_shutdown():
 			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+			goal = Pose()
+			currentPos = self.roomToGoal(argument)
+
+	        goal.position.x = currentPos[0]
+	        goal.position.y = currentPos[1]
+	        goal.position.z = currentPos[2]
+	        goal.orientation.w = 1
+	        goal.orientation.x = 0
+	        goal.orientation.y = 0
+	        goal.orientation.z = 0
+	        self.goalPub.publish(goal)
 			rate.sleep()
 		rospy.spin()
 
