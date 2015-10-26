@@ -41,8 +41,8 @@ class subsroutinestatus:
 		self.subRoutineStatus = 'Not Initialized'
 		self.subRoutineStatus = "ACTIVE"
 		self.status = {
-		'PENDING' : 'in progress',
-		'ACTIVE' : 'in progress',
+		'PENDING' : 'going_on',
+		'ACTIVE' : 'going_on',
 		'SUCCEEDED' : 'complete',
 		'PREEMPTED' : 'fail',
 		'ABORTED' : 'fail',

@@ -21,35 +21,35 @@ from std_msgs.msg import Bool
 class robotStateNode():
 	def robotState(self):
 		# Setup the publishers and subscribers
-		rospy.init_node("robotStateNode", anonymous=True)	
+		rospy.init_node("robotStateNode", anonymous=True)
+		print(self.taskStatus)
+		print(self.subroutineStatus)
+		rospy.Subscriber("/current_task",String,self.TaskListMessageCallback)
+		rospy.Subscriber("/current_subroutine_status",String,self.SubroutineStatusMessageCallback)
 		self.StatePub = rospy.Publisher('RobotState', String, queue_size=10)
-		self.TaskListSub = rospy.Subscriber("/current_task",String,self.TaskListMessageCallback)
-		self.SubroutineStatusSub = rospy.Subscriber("/current_subroutine_status",String,self.SubroutineStatusMessageCallback)
-
+		
 		rate = rospy.Rate(10) # Publish at 10hz
 		while not rospy.is_shutdown():
-
 			# Monitor the status of the current subroutine constantly and act accordingly
 			if (self.subroutineStatus == "complete"):
-				os.system(self.killSubroutines(currentSubroutine))
-				taskStatus = "success"
-				self.StatePub.publish(taskStatus)
-				return
+				# os.system(self.killSubroutines(currentSubroutine))
+				self.taskStatus = "success"
+				self.StatePub.publish(self.taskStatus)
 
 			elif (self.subroutineStatus == "error"):
 				os.system(self.killSubroutines(currentSubroutine))
 				# Nodes may get reset, you will lose data
-				taskStatus = "fail"
+				self.taskStatus = "fail"
 				os.system("Find Why you failed and act accordingly?")
 				# Shaky ground here, not sure how the three different fail modes are handled
-				self.StatePub.publish(taskStatus)
+				self.StatePub.publish(self.taskStatus)
 
-			else:
-				taskStatus = "in progress"
-				self.StatePub.publish(taskStatus)
-
+			elif (self.subroutineStatus == "going_on"):
+				self.taskStatus = "in progress"
+				self.StatePub.publish(self.taskStatus)
 			rate.sleep()
-
+		print(self.taskStatus)
+		print(self.subroutineStatus)
 		rospy.spin();
 
 
@@ -61,10 +61,14 @@ class robotStateNode():
 		parameterString = ""
 		for i in range(1,len(self.currentTask)):
 			parameterString = parameterString + "P" + str(i) + ":=" + self.currentTask[i] + " "			# For each paramter convert it to a string to make it a system call
+		print(parameterString + " ")
+		print(self.taskStatus)
 		if (self.taskStatus != "in progress"):
 			os.system(self.currentSubroutine + " " + parameterString)
 			print(self.currentSubroutine + " " + parameterString)
-		self.taskStatus = "in progress"
+			self.taskStatus = "in progress"
+			rate = rospy.Rate(10)
+			rate.sleep()
 
 	# Get the status of the subRoutine
 	def SubroutineStatusMessageCallback(self, data):
@@ -72,16 +76,16 @@ class robotStateNode():
 
 	def __init__(self):
 		self.currentTask = None
-		self.subroutineStatus = None
-		self.taskStatus = None
+		self.subroutineStatus = "comeplete"
+		self.taskStatus = "success"
 		self.currentSubroutine = None
 
 		# Maintain a list of subroutines to be called for each sub task the TaskList sends
 		self.subroutines = {
 			'go_to_room' : 'roslaunch squirtle_navigation SquirtleNavigation.launch',
-			# 'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/quirtleNavigation.launch',
-			# 'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
-			# 'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			'retrieve_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_utils/src/speech_retrieve_object.py',
+			'deliver_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_utils/src/speech_deliver_object.py',
+			'find_person' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_utils/src/speech_find_peron.py',
 			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
 			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
 			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
