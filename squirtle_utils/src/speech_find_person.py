@@ -6,6 +6,7 @@ if len(sys.argv)<2:
 	person = 'David'
 else:
 	person = str(sys.argv[1])
+	person = person[4:]
 print 'Name: ',person
 
 engine = pyttsx.init()

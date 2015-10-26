@@ -7,7 +7,9 @@ if len(sys.argv)<3:
 	location = 'desk'
 else:
 	myobject = str(sys.argv[1])
+	myobject = myobject[4:]
 	location = str(sys.argv[2])
+	location = location[4:]
 print 'object: ',myobject,', location: ',location
 
 engine = pyttsx.init()

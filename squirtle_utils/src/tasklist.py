@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 
-
-import rospy
-
-
-
 '''
 Listen and Talk
 by David Isele
 
 '''
 
-
+import rospy
 import roslib
 import rospy
 import os
@@ -26,7 +21,7 @@ class tasklist():
 	def __init__(self):
 		# setup
 		self.history = deque([])
-		self.command_queue = deque(["go_to_room vending_machine", "retrieve_object diet_coke", "go_to_room GRASP_Lab"])
+		self.command_queue = deque(["retrieve_object Chips", "go_to_room vending_machine", "deliver_object diet_coke", "go_to_room GRASP_Lab"])
 		self.server_list =[]
 		rospy.init_node("tasklist")	
 		self.pub = rospy.Publisher('current_task', String, queue_size=10)
@@ -62,8 +57,7 @@ class tasklist():
 		
 		else:
 			print("The robot state is trying to confuse me")
-		
-
+			
 		rospy.loginfo(my_message)
 		pub.publish(my_message)
 		rate.sleep()

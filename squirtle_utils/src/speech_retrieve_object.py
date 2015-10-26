@@ -6,6 +6,7 @@ if len(sys.argv)<2:
 	myobject = 'stapler'
 else:
 	myobject = str(sys.argv[1])
+	myobject = myobject[4:]
 print 'object: ',myobject
 
 engine = pyttsx.init()
