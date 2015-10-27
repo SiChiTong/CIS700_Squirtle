@@ -33,6 +33,7 @@ import time
 import sys
 from std_msgs.msg import String
 from std_msgs.msg import Bool
+from geometry_msgs.msg import *
 from actionlib_msgs.msg import GoalStatusArray
 
 class subsroutinestatus:
@@ -52,29 +53,30 @@ class subsroutinestatus:
 		'RECALLED' : 'fail',
 		'LOST' : 'fail'
 		}
-		self.subroutine(argument)
-
+		
 		self.roomToGoal = {
 		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0],
 		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0],
 		'bump_space' : [-14.9074779785, 15.5285880624, 0.0],
 		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0]
 		}
+		
+		self.subroutine(argument)
 
 	def subroutine(self, argument):
+		currentPos = [0, 0, 0]
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
 		self.goalPub = rospy.Publisher('goToPoint', Pose, queue_size=10)
 		#self.SubRoutineStatusSub = rospy.Subscriber('/status_list', GoalStatusArray, self.SubRoutineStatusCallBack)
-		self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
+		#self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
 		rate = rospy.Rate(10) # Publish at 10hz
-		
+		goal = Pose()
+		print("OK")
 		while not rospy.is_shutdown():
-			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
-			goal = Pose()
-			currentPos = self.roomToGoal(argument)
-
+			currentPos = self.roomToGoal[argument]
+	        print("OKKKKkk")
 	        goal.position.x = currentPos[0]
 	        goal.position.y = currentPos[1]
 	        goal.position.z = currentPos[2]
@@ -82,12 +84,17 @@ class subsroutinestatus:
 	        goal.orientation.x = 0
 	        goal.orientation.y = 0
 	        goal.orientation.z = 0
+	        print(goal)
 	        self.goalPub.publish(goal)
-			rate.sleep()
+	        self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+	        rate.sleep()
+	        print("Um")
+		print("WHAT?!")
 		rospy.spin()
 
 	def SubRoutineStatusCallBack(self, data):
 		self.subRoutineStatus = data.data
+		print("KK")
 
 if __name__=="__main__":
     if len(sys.argv) != 4:
