@@ -9,7 +9,7 @@
        provided service: /get_exploration_path (when call will return the path, also publish it to /exploration_path)
        
    --> another node to manage exploration.
-       subscribe to: /mvoe_base/status
+       subscribe to: /move_base/status
        publish to:   /move_base_simple/goal
                      /move_base/cancel
        
