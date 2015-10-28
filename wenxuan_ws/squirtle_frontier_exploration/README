@@ -13,8 +13,10 @@
        publish to:   /move_base_simple/goal
                      /move_base/cancel
        
-       ask for service: /get_exploration_path 
-      
+       service client: call /get_exploration_path 
+       service server: provide  /start_exploration
+                                /pause_exploration
+                                
        call /get_exploration_path service and get the path.
        extract the last pose as the exploration goal, pass it to move_base 
         (NOTE: instead of using the path_follower provided by hector_navigation, this will give flexibility from move_base)
