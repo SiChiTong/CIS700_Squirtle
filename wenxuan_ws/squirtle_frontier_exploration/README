@@ -1,3 +1,21 @@
-This package is for frontier exploration of squirtle.
+-->This package is for frontier exploration of squirtle.
+   Using the frontier exploration package provide by hector navigation.
 
-Using the frontier exploration package provide by hector navigation.
+-->Mechanism of this package:
+   --> Use hector_exploration_node which:
+       subscibe to: /tf (/base_link frame to /map frame), 
+                    /map (usually provided by /map_server when doing amcl, or by gmapping or hector_mapping node)
+       publish to:  /exploration_path (which specify the trajectory of exploration)
+       provided service: /get_exploration_path (when call will return the path, also publish it to /exploration_path)
+       
+   --> another node to manage exploration.
+       subscribe to: /mvoe_base/status
+       publish to:   /move_base_simple/goal
+                     /move_base/cancel
+       
+       ask for service: /get_exploration_path 
+      
+       call /get_exploration_path service and get the path.
+       extract the last pose as the exploration goal, pass it to move_base 
+        (NOTE: instead of using the path_follower provided by hector_navigation, this will give flexibility from move_base)
+       check the status of move_base and adjust behavior
