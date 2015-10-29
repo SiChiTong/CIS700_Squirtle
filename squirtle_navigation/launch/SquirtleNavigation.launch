@@ -3,7 +3,7 @@
 <!-- Make map an argument and see how to pass it using the os.system function -->
 
   <!-- Argument to set the destination for the Navigation Stack-->
-  <arg name="P1" default="GRASP_Lab"/>
+  <arg name="P1" default="vending_machine"/>
 
   <!-- Launch the node that communicates between the subroutines -->
   <node name="subsroutineStatus" type="subroutineStatus.py" pkg="squirtle_navigation" args="$(arg P1)" />

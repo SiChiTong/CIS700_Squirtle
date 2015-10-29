@@ -4,24 +4,23 @@
 Node to send navigation status to the robot state
 by Siddharth Srivatsa
 
-uint8 status
-uint8 PENDING            # The goal has yet to be processed by the action server
-uint8 ACTIVE             # The goal is currently being processed by the action server
-uint8 PREEMPTED          # The goal received a cancel request after it started executing
-                         #   and has since completed its execution (Terminal State)
-uint8 SUCCEEDED          # The goal was achieved successfully by the action server (Terminal State)
-uint8 ABORTED            # The goal was aborted during execution by the action server due
-                         #    to some failure (Terminal State)
-uint8 REJECTED           # The goal was rejected by the action server without being processed,
-                         #    because the goal was unattainable or invalid (Terminal State)
-uint8 PREEMPTING         # The goal received a cancel request after it started executing
-                         #    and has not yet completed execution
-uint8 RECALLING          # The goal received a cancel request before it started executing,
-                         #    but the action server has not yet confirmed that the goal is canceled
-uint8 RECALLED           # The goal received a cancel request before it started executing
-                         #    and was successfully cancelled (Terminal State)
-uint8 LOST               # An action client can determine that a goal is LOST. This should not be
-                         #    sent over the wire by an action server
+uint8 PENDING           0 # The goal has yet to be processed by the action server
+uint8 ACTIVE            1 # The goal is currently being processed by the action server
+uint8 PREEMPTED         2 # The goal received a cancel request after it started executing
+                          #   and has since completed its execution (Terminal State)
+uint8 SUCCEEDED         3 # The goal was achieved successfully by the action server (Terminal State)
+uint8 ABORTED           4 # The goal was aborted during execution by the action server due
+                          #    to some failure (Terminal State)
+uint8 REJECTED          5 # The goal was rejected by the action server without being processed,
+                          #    because the goal was unattainable or invalid (Terminal State)
+uint8 PREEMPTING        6 # The goal received a cancel request after it started executing
+                          #    and has not yet completed execution
+uint8 RECALLING         7 # The goal received a cancel request before it started executing,
+                          #    but the action server has not yet confirmed that the goal is canceled
+uint8 RECALLED          8 # The goal received a cancel request before it started executing
+                          #    and was successfully cancelled (Terminal State)
+uint8 LOST              9 # An action client can determine that a goal is LOST. This should not be
+                          #    sent over the wire by an action server
 
 '''
 
@@ -42,16 +41,16 @@ class subsroutinestatus:
 		self.subRoutineStatus = 'Not Initialized'
 		self.subRoutineStatus = "ACTIVE"
 		self.status = {
-		'PENDING' : 'going_on',
-		'ACTIVE' : 'going_on',
-		'SUCCEEDED' : 'complete',
-		'PREEMPTED' : 'fail',
-		'ABORTED' : 'fail',
-		'REJECTED' : 'fail',
-		'PREEMPTING' : 'fail',
-		'RECALLING' : 'fail',
-		'RECALLED' : 'fail',
-		'LOST' : 'fail'
+		'0' : 'going_on',
+		'1' : 'going_on',
+		'2' : 'complete',
+		'3' : 'fail',
+		'4' : 'fail',
+		'5' : 'fail',
+		'6' : 'fail',
+		'7' : 'fail',
+		'8' : 'fail',
+		'9' : 'fail'
 		}
 		
 		self.roomToGoal = {
@@ -69,7 +68,7 @@ class subsroutinestatus:
 		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
 		self.goalPub = rospy.Publisher('goToPoint', Pose, queue_size=10)
-		#self.SubRoutineStatusSub = rospy.Subscriber('/status_list', GoalStatusArray, self.SubRoutineStatusCallBack)
+#		self.SubRoutineStatusSub = rospy.Subscriber('/move_base/status', GoalStatusArray, self.SubRoutineStatusCallBack)
 		#self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
 		rate = rospy.Rate(10) # Publish at 10hz
 		goal = Pose()
@@ -93,7 +92,7 @@ class subsroutinestatus:
 		rospy.spin()
 
 	def SubRoutineStatusCallBack(self, data):
-		self.subRoutineStatus = data.data
+		self.subRoutineStatus = data.status
 		print("KK")
 
 if __name__=="__main__":
