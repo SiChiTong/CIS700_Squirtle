@@ -63,7 +63,8 @@ class subsroutinestatus:
 		self.subroutine(argument)
 
 	def subroutine(self, argument):
-		currentPos = [0, 0, 0]
+		position = [0, 0, 0]
+		quaternion = [1, 0, 0, 0]
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
@@ -75,25 +76,27 @@ class subsroutinestatus:
 		print("OK")
 		while not rospy.is_shutdown():
 			currentPos = self.roomToGoal[argument]
-	        	print("OKKKKkk")
-	        	goal.position.x = currentPos[0]
-	        	goal.position.y = currentPos[1]
-	        	goal.position.z = currentPos[2]
-	        	goal.orientation.w = 1
-	        	goal.orientation.x = 0
-	        	goal.orientation.y = 0
-	        	goal.orientation.z = 0
-	        	print(goal)
-	        	self.goalPub.publish(goal)
-	        	self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
-	        	rate.sleep()
-	        print("Um")
-		print("WHAT?!")
+			goal.position.x = position[0]
+			goal.position.y = position[1]
+			goal.position.z = position[2]
+			goal.orientation.w = quaternion[0]
+			goal.orientation.x = quaternion[1]
+			goal.orientation.y = quaternion[2]
+			goal.orientation.z = quaternion[3]
+			print(goal)
+			self.goalPub.publish(goal)
+			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+			rate.sleep()
 		rospy.spin()
 
 	def SubRoutineStatusCallBack(self, data):
 		self.subRoutineStatus = data.status
-		print("KK")
+		# listener = tf.TransformListener()
+		# try:
+  #           (position, quaternion) = listener.lookupTransform('/odom', '/map', rospy.Time(0))
+  #           quaternion = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
+  #       except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+  #           continue
 
 if __name__=="__main__":
     if len(sys.argv) != 4:
