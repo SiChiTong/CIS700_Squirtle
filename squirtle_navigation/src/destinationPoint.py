@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+'''
+    Node to get the destination for the robot to travel to
+    Convert it to x and y co-ordinates and send it move base
+    through the action server
+    Author: Siddharth Srivatsa
+'''
+
 import rospy
 from nav_msgs.msg import Odometry
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
@@ -15,13 +22,13 @@ def odomcallback(data):
     goal.target_pose.header.frame_id = "map";
     goal.target_pose.header.stamp = rospy.Time.now()
 
-    goal.target_pose.pose.position.x = data.pose.pose.position.x
-    goal.target_pose.pose.position.y = data.pose.pose.position.y
-    goal.target_pose.pose.position.z = data.pose.pose.position.z
-    goal.target_pose.pose.orientation.w = data.pose.pose.orientation.w
-    goal.target_pose.pose.orientation.x = data.pose.pose.orientation.x
-    goal.target_pose.pose.orientation.y = data.pose.pose.orientation.y
-    goal.target_pose.pose.orientation.z = data.pose.pose.orientation.z
+    goal.target_pose.pose.position.x = data.position.x
+    goal.target_pose.pose.position.y = data.position.y
+    goal.target_pose.pose.position.z = data.position.z
+    goal.target_pose.pose.orientation.w = data.orientation.w
+    goal.target_pose.pose.orientation.x = data.orientation.x
+    goal.target_pose.pose.orientation.y = data.orientation.y
+    goal.target_pose.pose.orientation.z = data.orientation.z
 
     MoveBaseClient.send_goal(goal)
     MoveBaseClient.wait_for_result()

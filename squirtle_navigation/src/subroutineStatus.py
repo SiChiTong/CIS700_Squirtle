@@ -76,18 +76,18 @@ class subsroutinestatus:
 		print("OK")
 		while not rospy.is_shutdown():
 			currentPos = self.roomToGoal[argument]
-	        print("OKKKKkk")
-	        goal.position.x = currentPos[0]
-	        goal.position.y = currentPos[1]
-	        goal.position.z = currentPos[2]
-	        goal.orientation.w = 1
-	        goal.orientation.x = 0
-	        goal.orientation.y = 0
-	        goal.orientation.z = 0
-	        print(goal)
-	        self.goalPub.publish(goal)
-	        self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
-	        rate.sleep()
+	        	print("OKKKKkk")
+	        	goal.position.x = currentPos[0]
+	        	goal.position.y = currentPos[1]
+	        	goal.position.z = currentPos[2]
+	        	goal.orientation.w = 1
+	        	goal.orientation.x = 0
+	        	goal.orientation.y = 0
+	        	goal.orientation.z = 0
+	        	print(goal)
+	        	self.goalPub.publish(goal)
+	        	self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+	        	rate.sleep()
 	        print("Um")
 		print("WHAT?!")
 		rospy.spin()
