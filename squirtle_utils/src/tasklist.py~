@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 
-
-import rospy
-
-
-
 '''
 Listen and Talk
 by David Isele
 
 '''
 
-
+import rospy
 import roslib
 import rospy
 import os
@@ -22,28 +17,31 @@ from std_msgs.msg import Bool
 from collections import deque
 
 class tasklist():
-
-	self.history = deque([])
-	self.command_queue = deque([])
 	
 	def __init__(self):
 		# setup
+		self.history = deque([])
+		self.command_queue = deque(["retrieve_object Pack_of_chips", "go_to_room vending_machine", "deliver_object diet_coke", "go_to_room GRASP_Lab"])
+		self.server_list =[]
 		rospy.init_node("tasklist")	
 		self.pub = rospy.Publisher('current_task', String, queue_size=10)
-		self.sub = rospy.Subscriber("/serverstuff",String,self.ServerMessageCallback)# maybe query the server?
-		self.sub2 = rospy.Subscriber("/RobotState",String,self.RobotStateCallback)
+		# self.sub = rospy.Subscriber("/serverstuff",String,self.ServerMessageCallback)
+		# self.sub2 = rospy.Subscriber("/RobotState",String,self.RobotStateCallback)
 		rate = rospy.Rate(10) # 10hz
+		while not rospy.is_shutdown():
+			if len(self.command_queue)>0:
+				self.pub.publish(self.command_queue[0])
+				rate.sleep()
 
-		if len(self.command_queue)>0:
-			pub.publish(self.command_queue[0])
-			rate.sleep()
-
-		rospy.spin();
+		# rospy.spin();
 
 
 	def ServerMessageCallback(self,data):
-		#parse server list
-		#self.command_queue.append()
+		if data.data!=self.server_list:
+			self.server_list = data.data+[]
+			#parse server list
+			for command in self.server_list:
+				self.command_queue.append(command)
 
 	def RobotStateCallback(self,data):
 		if data.data=="in progress":
@@ -55,12 +53,11 @@ class tasklist():
 			# store the completed task in the history
 			self.history.append(completed_task)
 			
-		elif data.data=="fail":
+		#elif data.data=="fail":
 		
 		else:
 			print("The robot state is trying to confuse me")
-		
-
+			
 		rospy.loginfo(my_message)
 		pub.publish(my_message)
 		rate.sleep()
