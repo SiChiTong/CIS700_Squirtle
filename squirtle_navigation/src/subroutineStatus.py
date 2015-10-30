@@ -54,17 +54,15 @@ class subsroutinestatus:
 		}
 		
 		self.roomToGoal = {
-		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0],
-		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0],
-		'bump_space' : [-14.9074779785, 15.5285880624, 0.0],
-		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0]
+		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0, 1, 0, 0, 0],
+		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0, 1, 0, 0, 0],
+		'bump_space' : [-14.9074779785, 15.5285880624, 0.0, 1, 0, 0, 0],
+		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0, 1, 0, 0, 0]
 		}
 		
 		self.subroutine(argument)
 
 	def subroutine(self, argument):
-		position = [0, 0, 0]
-		quaternion = [1, 0, 0, 0]
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
@@ -78,26 +76,26 @@ class subsroutinestatus:
 		while not rospy.is_shutdown():
 			try:
 				(trans,rot) = listener.lookupTransform('/odom', '/map', rospy.Time())
-				currentPos = self.roomToGoal[argument]
-				goal.position.x = position[0] + trans[0]
-				goal.position.y = position[1] + trans[1]
-				goal.position.z = position[2] + trans[2]
-				goal.orientation.w = quaternion[0] + rot[0]
-				goal.orientation.x = quaternion[1] + rot[1]
-				goal.orientation.y = quaternion[2] + rot[2]
-				goal.orientation.z = quaternion[3] + rot[3]
+				GoalPos = self.roomToGoal[argument]
+				goal.position.x = GoalPos[0] + trans[0]
+				goal.position.y = GoalPos[1] + trans[1]
+				goal.position.z = GoalPos[2] + trans[2]
+				goal.orientation.w = GoalPos[3] + rot[0]
+				goal.orientation.x = GoalPos[4] + rot[1]
+				goal.orientation.y = GoalPos[5] + rot[2]
+				goal.orientation.z = GoalPos[6] + rot[3]
 				self.goalPub.publish(goal)
 				self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 			except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-				urrentPos = self.roomToGoal[argument]
-				goal.position.x = position[0] + trans[0]
-				goal.position.y = position[1] + trans[1]
-				goal.position.z = position[2] + trans[2]
-				goal.orientation.w = quaternion[0] + rot[0]
-				goal.orientation.x = quaternion[1] + rot[1]
-				goal.orientation.y = quaternion[2] + rot[2]
-				goal.orientation.z = quaternion[3] + rot[3]
-				self.goalPub.publish(goal)
+				# GoalPos = self.roomToGoal[argument]
+				# goal.position.x = GoalPos[0] + trans[0]
+				# goal.position.y = GoalPos[1] + trans[1]
+				# goal.position.z = GoalPos[2] + trans[2]
+				# goal.orientation.w = GoalPos[3] + rot[0]
+				# goal.orientation.x = GoalPos[4] + rot[1]
+				# goal.orientation.y = GoalPos[5] + rot[2]
+				# goal.orientation.z = GoalPos[6] + rot[3]
+				# self.goalPub.publish(goal)
 				self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 				continue
 			rate.sleep()
