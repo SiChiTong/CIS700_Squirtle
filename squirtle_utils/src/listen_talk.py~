@@ -25,8 +25,8 @@ class my_process():
 	def __init__(self):
 		# setup
 		rospy.init_node("my_process")	
-		pub = rospy.Publisher('my_topic', String, queue_size=10)
-		rospy.Subscriber("/image_converter/output_video",SensorState,self.SensorPowerEventCallback)
+		self.pub = rospy.Publisher('my_topic', String, queue_size=10)
+		self.sub = rospy.Subscriber("/image_converter/output_video",SensorState,self.SensorPowerEventCallback)
 		rate = rospy.Rate(10) # 10hz
 
 		rospy.spin();

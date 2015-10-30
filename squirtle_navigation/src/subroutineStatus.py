@@ -39,7 +39,7 @@ class subsroutinestatus:
 
 	def __init__(self, argument):
 		self.subRoutineStatus = 'Not Initialized'
-		self.subRoutineStatus = "ACTIVE"
+		self.subRoutineStatus = "0"
 		self.status = {
 		'0' : 'going_on',
 		'1' : 'going_on',
