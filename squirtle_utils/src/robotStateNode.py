@@ -45,7 +45,11 @@ class robotStateNode():
 				self.StatePub.publish(self.taskStatus)
 
 			elif (self.subroutineStatus == "going_on"):
-				self.taskStatus = "in progress"
+				self.taskStatus = "in_progress"
+				self.StatePub.publish(self.taskStatus)
+				
+			elif (self.subroutineStatus == 'idle'):
+				self.taskStatus = "task_not_started"
 				self.StatePub.publish(self.taskStatus)
 			rate.sleep()
 		print(self.taskStatus)
@@ -76,7 +80,7 @@ class robotStateNode():
 
 	def __init__(self):
 		self.currentTask = None
-		self.subroutineStatus = "comeplete"
+		self.subroutineStatus = "complete"
 		self.taskStatus = "success"
 		self.currentSubroutine = None
 

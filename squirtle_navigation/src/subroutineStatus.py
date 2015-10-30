@@ -39,18 +39,19 @@ class subsroutinestatus:
 
 	def __init__(self, argument):
 		self.subRoutineStatus = 'Not Initialized'
-		self.subRoutineStatus = "0"
+		self.subRoutineStatus = 0
 		self.status = {
-		'0' : 'going_on',
-		'1' : 'going_on',
-		'2' : 'complete',
-		'3' : 'fail',
-		'4' : 'fail',
-		'5' : 'fail',
-		'6' : 'fail',
-		'7' : 'fail',
-		'8' : 'fail',
-		'9' : 'fail'
+		0 : 'going_on',
+		1 : 'going_on',
+		2 : 'complete',
+		3 : 'complete',
+		4 : 'error',
+		5 : 'error',
+		6 : 'error',
+		7 : 'error',
+		8 : 'error',
+		9 : 'error',
+		100 : 'idle'
 		}
 		
 		self.roomToGoal = {
@@ -69,7 +70,7 @@ class subsroutinestatus:
 		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
 		self.goalPub = rospy.Publisher('goToPoint', Pose, queue_size=10)
-#		self.SubRoutineStatusSub = rospy.Subscriber('/move_base/status', GoalStatusArray, self.SubRoutineStatusCallBack)
+		self.SubRoutineStatusSub = rospy.Subscriber('/move_base/status', GoalStatusArray, self.SubRoutineStatusCallBack)
 		#self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
 		rate = rospy.Rate(10) # Publish at 10hz
 		goal = Pose()
@@ -83,14 +84,22 @@ class subsroutinestatus:
 			goal.orientation.x = quaternion[1]
 			goal.orientation.y = quaternion[2]
 			goal.orientation.z = quaternion[3]
-			print(goal)
+
 			self.goalPub.publish(goal)
+			if not self.subRoutineStatus:
+				self.subRoutineStatus = 100
+			print(self.status[self.subRoutineStatus])
 			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 			rate.sleep()
 		rospy.spin()
 
 	def SubRoutineStatusCallBack(self, data):
-		self.subRoutineStatus = data.status
+		if not data.status_list:
+			self.subRoutineStatus = 100
+		else:
+			self.subRoutineStatus = data.status_list[-1].status
+		print data.status_list[-1].status
+
 		# listener = tf.TransformListener()
 		# try:
   #           (position, quaternion) = listener.lookupTransform('/odom', '/map', rospy.Time(0))
