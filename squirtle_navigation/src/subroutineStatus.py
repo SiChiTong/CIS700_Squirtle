@@ -41,6 +41,7 @@ class subsroutinestatus:
 		self.subRoutineStatus = 'Not Initialized'
 		self.subRoutineStatus = 0
 		self.status = {
+
 		0 : 'going_on',
 		1 : 'going_on',
 		2 : 'complete',
@@ -52,44 +53,55 @@ class subsroutinestatus:
 		8 : 'error',
 		9 : 'error',
 		100 : 'idle'
-		}
-		
+
 		self.roomToGoal = {
-		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0],
-		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0],
-		'bump_space' : [-14.9074779785, 15.5285880624, 0.0],
-		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0]
+		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0, 1, 0, 0, 0],
+		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0, 1, 0, 0, 0],
+		'bump_space' : [-14.9074779785, 15.5285880624, 0.0, 1, 0, 0, 0],
+		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0, 1, 0, 0, 0]
 		}
 		
 		self.subroutine(argument)
 
 	def subroutine(self, argument):
-		position = [0, 0, 0]
-		quaternion = [1, 0, 0, 0]
 		# Setup the publishers and subscribers
 		rospy.init_node("subsroutinestatus", anonymous=True)
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
 		self.goalPub = rospy.Publisher('goToPoint', Pose, queue_size=10)
+
 		self.SubRoutineStatusSub = rospy.Subscriber('/move_base/status', GoalStatusArray, self.SubRoutineStatusCallBack)
 		#self.SubRoutineStatusSub = rospy.Subscriber("/statusList", String, self.SubRoutineStatusCallBack)
+		listener = tf.TransformListener()
+
 		rate = rospy.Rate(10) # Publish at 10hz
 		goal = Pose()
 		print("OK")
 		while not rospy.is_shutdown():
-			currentPos = self.roomToGoal[argument]
-			goal.position.x = position[0]
-			goal.position.y = position[1]
-			goal.position.z = position[2]
-			goal.orientation.w = quaternion[0]
-			goal.orientation.x = quaternion[1]
-			goal.orientation.y = quaternion[2]
-			goal.orientation.z = quaternion[3]
 
-			self.goalPub.publish(goal)
-			if not self.subRoutineStatus:
-				self.subRoutineStatus = 100
-			print(self.status[self.subRoutineStatus])
-			self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+			try:
+				(trans,rot) = listener.lookupTransform('/odom', '/map', rospy.Time())
+				GoalPos = self.roomToGoal[argument]
+				goal.position.x = GoalPos[0] + trans[0]
+				goal.position.y = GoalPos[1] + trans[1]
+				goal.position.z = GoalPos[2] + trans[2]
+				goal.orientation.w = GoalPos[3] + rot[0]
+				goal.orientation.x = GoalPos[4] + rot[1]
+				goal.orientation.y = GoalPos[5] + rot[2]
+				goal.orientation.z = GoalPos[6] + rot[3]
+				self.goalPub.publish(goal)
+				self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+			except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+				# GoalPos = self.roomToGoal[argument]
+				# goal.position.x = GoalPos[0] + trans[0]
+				# goal.position.y = GoalPos[1] + trans[1]
+				# goal.position.z = GoalPos[2] + trans[2]
+				# goal.orientation.w = GoalPos[3] + rot[0]
+				# goal.orientation.x = GoalPos[4] + rot[1]
+				# goal.orientation.y = GoalPos[5] + rot[2]
+				# goal.orientation.z = GoalPos[6] + rot[3]
+				# self.goalPub.publish(goal)
+				self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+				continue
 			rate.sleep()
 		rospy.spin()
 
