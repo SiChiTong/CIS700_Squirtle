@@ -21,7 +21,7 @@ class tasklist():
 	def __init__(self):
 		# setup
 		self.history = deque([])
-		self.command_queue = deque(["retrieve_object Pack_of_chips", "go_to_room vending_machine", "deliver_object diet_coke", "go_to_room GRASP_Lab"])
+		self.command_queue = deque(["go_to_room vending_machine", "retrieve_object Pack_of_chips", "go_to_room charity_office", "deliver_object Pack_of_Chips", "go_to_room GRASP_Lab"])
 		self.server_list =[]
 		rospy.init_node("tasklist")	
 		self.pub = rospy.Publisher('current_task', String, queue_size=10)
@@ -54,6 +54,8 @@ class tasklist():
 			self.history.append(completed_task)
 			
 		#elif data.data=="fail":
+		
+		#elif data.data == "task_not_started"
 		
 		else:
 			print("The robot state is trying to confuse me")
