@@ -28,6 +28,7 @@ import rospy
 import roslib
 import rospy
 import os
+import tf
 import time
 import sys
 from std_msgs.msg import String
@@ -41,7 +42,6 @@ class subsroutinestatus:
 		self.subRoutineStatus = 'Not Initialized'
 		self.subRoutineStatus = 0
 		self.status = {
-
 		0 : 'going_on',
 		1 : 'going_on',
 		2 : 'complete',
@@ -53,8 +53,9 @@ class subsroutinestatus:
 		8 : 'error',
 		9 : 'error',
 		100 : 'idle'
-
-		self.roomToGoal = {
+		}
+		
+	   	self.roomToGoal = {
 		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0, 1, 0, 0, 0],
 		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0, 1, 0, 0, 0],
 		'bump_space' : [-14.9074779785, 15.5285880624, 0.0, 1, 0, 0, 0],
@@ -77,9 +78,9 @@ class subsroutinestatus:
 		goal = Pose()
 		print("OK")
 		while not rospy.is_shutdown():
-
 			try:
-				(trans,rot) = listener.lookupTransform('/odom', '/map', rospy.Time())
+				now = rospy.Time.now()
+				(trans,rot) = listener.lookupTransform('/odom', '/map', now)
 				GoalPos = self.roomToGoal[argument]
 				goal.position.x = GoalPos[0] + trans[0]
 				goal.position.y = GoalPos[1] + trans[1]
@@ -102,6 +103,10 @@ class subsroutinestatus:
 				# self.goalPub.publish(goal)
 				self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 				continue
+				
+			except RuntimeError as e:
+				print ("Ok now I know who the culprit is")
+				ROS_ERROR("Exception: [%s]", e.what());
 			rate.sleep()
 		rospy.spin()
 
@@ -110,14 +115,7 @@ class subsroutinestatus:
 			self.subRoutineStatus = 100
 		else:
 			self.subRoutineStatus = data.status_list[-1].status
-		print data.status_list[-1].status
-
-		# listener = tf.TransformListener()
-		# try:
-  #           (position, quaternion) = listener.lookupTransform('/odom', '/map', rospy.Time(0))
-  #           quaternion = tf.transformations.quaternion_from_euler(rot[0], rot[1], rot[2])
-  #       except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-  #           continue
+			print data.status_list[-1].status
 
 if __name__=="__main__":
     if len(sys.argv) != 4:
