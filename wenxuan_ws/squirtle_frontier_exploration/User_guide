@@ -1,0 +1,45 @@
+Overview:
+  -->This package is for frontier exploration of squirtle.
+     Using the frontier exploration package provide by hector navigation.
+
+  -->Mechanism of this package:
+     --> Use hector_exploration_node which:
+         subscibe to: /tf (/base_link frame to /map frame), 
+                      /map (usually provided by /map_server when doing amcl, or by gmapping or hector_mapping node)
+         publish to:  /exploration_path (which specify the trajectory of exploration)
+         provided service: /get_exploration_path (when call will return the path, also publish it to /exploration_path)
+         
+     --> simple_exploration node to manage exploration.
+         require: 
+            move_base,  /get_exploration_path service
+         includes:
+            service client: call /get_exploration_path 
+            move_base action client: send goal to and get status from move_base
+         process:       
+            call /get_exploration_path service and get the path.
+            extract the last pose as the exploration goal, pass it to move_base 
+              (NOTE: instead of using the path_follower provided by hector_navigation, this will give flexibility from move_base)
+            check the status of move_base and adjust behavior
+
+Usage:
+  <Simple usage on a standard turtlebot>: 
+      (DESCRIPTION: this is for turtlebot2 with kinect default setup)
+      (NOTE: hasn't been optimized so the performance maybe ugly. It's just for a quick on-hand)
+
+      1. (On turtlebot) fireup bringup
+          $ roslaunch turtlebot_bringup minimal.launch
+
+      2. (On turtlebot) start gmapping demo, this will bring up gmapping and move_base
+          $ roslaunch turtlebot_navigation gmapping_demo.launch
+
+      3. (On turtlebot) start hector exploration planner, this will provide exploration plan service
+          $ roslaunch hector_exploration_node exploration_planner.launch
+
+      4. (On remote or turtlebot) start simple exploration node
+          $ rosrun squirtle_frontier_exploration simple_exploration 
+
+      Now the turtlebot will start moving to exploration goals
+
+  <Usage on squirtle>
+      (DESCRIPTION: this is for turtlebot2 with rplidar)
+
