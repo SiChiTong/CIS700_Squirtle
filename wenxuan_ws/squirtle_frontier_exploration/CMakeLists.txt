@@ -5,8 +5,13 @@ project(squirtle_frontier_exploration)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
+	roscpp
+	rospy
+	actionlib
+	move_base_msgs
+	hector_nav_msgs
+	geometry_msgs
+
 )
 
 ## System dependencies are found with CMake's conventions
@@ -103,6 +108,8 @@ catkin_package(
 #  LIBRARIES squirtle_frontier_exploration
 #  CATKIN_DEPENDS roscpp rospy
 #  DEPENDS system_lib
+
+  CATKIN_DEPENDS geometry_msgs hector_nav_msgs roscpp rospy
 )
 
 ###########
@@ -113,7 +120,7 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  ${catkin_INCLUDE_DIRS}
+  include ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -186,26 +193,6 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-
-##########################################################
-###### customized ########################################
-##########################################################
-
-# add included header files
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-find_package(catkin REQUIRED COMPONENTS
-	actionlib
-	move_base_msgs
-	hector_nav_msgs
-	geometry_msgs
-	roscpp
-    rospy
-)
-
 add_executable(simple_exploration src/simple_exploration.cpp)
 target_link_libraries(simple_exploration ${catkin_LIBRARIES})
-
-
-
-
+add_dependencies(simple_exploration hector_nav_msgs_generate_messages)
