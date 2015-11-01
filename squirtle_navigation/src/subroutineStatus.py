@@ -56,10 +56,10 @@ class subsroutinestatus:
 		}
 		
 	   	self.roomToGoal = {
-		'GRASP_Lab' : [13.4993789353, 23.6495585172, 0.0, 1, 0, 0, 0],
-		'vending_machine' : [-1.39744438739, -0.821078977705, 0.0, 1, 0, 0, 0],
-		'bump_space' : [-14.9074779785, 15.5285880624, 0.0, 1, 0, 0, 0],
-		'Charity_Office' : [-29.9078956456, 0.3836611574, 0.0, 1, 0, 0, 0]
+		'GRASP_Lab' : [2.66051835131, 1.814285866, 0.0, 0.996794512902, 0.0, 0.0, -0.0800043689302],
+		'vending_machine' : [23.6841973344, -13.0116452665, 0.0, 0.927753744615, 0.0, 0.0, 0.373192965305],
+		# 'bump_space' : [-14.9074779785, 15.5285880624, 0.0, 1, 0, 0, 0],
+		'Charity_Office' : [-27.1387192384, 1.62747479075, 0.0, 0.0546438511255, 0.0, 0.0, 0.998505908613]
 		}
 		
 		self.subroutine(argument)
@@ -101,7 +101,7 @@ class subsroutinestatus:
 				# goal.orientation.y = GoalPos[5] + rot[2]
 				# goal.orientation.z = GoalPos[6] + rot[3]
 				# self.goalPub.publish(goal)
-				self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
+				# self.SubRoutineStatusPub.publish(self.status[self.subRoutineStatus])
 				continue
 				
 			except RuntimeError as e:
