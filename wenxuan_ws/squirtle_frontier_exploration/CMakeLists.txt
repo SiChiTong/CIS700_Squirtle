@@ -185,3 +185,27 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+
+##########################################################
+###### customized ########################################
+##########################################################
+
+# add included header files
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+find_package(catkin REQUIRED COMPONENTS
+	actionlib
+	move_base_msgs
+	hector_nav_msgs
+	geometry_msgs
+	roscpp
+    rospy
+)
+
+add_executable(simple_exploration src/simple_exploration.cpp)
+target_link_libraries(simple_exploration ${catkin_LIBRARIES})
+
+
+
+

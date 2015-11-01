@@ -8,16 +8,14 @@
        publish to:  /exploration_path (which specify the trajectory of exploration)
        provided service: /get_exploration_path (when call will return the path, also publish it to /exploration_path)
        
-   --> another node to manage exploration.
-       subscribe to: /move_base/status
-       publish to:   /move_base_simple/goal
-                     /move_base/cancel
-       
-       service client: call /get_exploration_path 
-       service server: provide  /start_exploration
-                                /pause_exploration
-                                
-       call /get_exploration_path service and get the path.
-       extract the last pose as the exploration goal, pass it to move_base 
-        (NOTE: instead of using the path_follower provided by hector_navigation, this will give flexibility from move_base)
-       check the status of move_base and adjust behavior
+   --> simple_exploration node to manage exploration.
+       require: 
+          move_base,  /get_exploration_path service
+       includes:
+          service client: call /get_exploration_path 
+          move_base action client: send goal to and get status from move_base
+       process:       
+          call /get_exploration_path service and get the path.
+          extract the last pose as the exploration goal, pass it to move_base 
+            (NOTE: instead of using the path_follower provided by hector_navigation, this will give flexibility from move_base)
+          check the status of move_base and adjust behavior
