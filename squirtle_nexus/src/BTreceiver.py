@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 
-## Node for Bluetooth Communication with Android
+'''
+Node to establish ROS link with Nexus 
+by Mayumi Mohan
+
+# App should preferrably be turned on before running the node... 8 second delay to establish connection if not
+# Subscribes to: /current_task 
+# Publishes: 
+'''
 
 import roslib
 import rospy
