@@ -21,6 +21,7 @@ from std_msgs.msg import String
 from std_msgs.msg import Bool
 
 class robotStateNode():
+
 	def robotState(self):
 		# Setup the publishers and subscribers
 		rospy.init_node("robotStateNode", anonymous=True)
@@ -39,6 +40,8 @@ class robotStateNode():
 				os.system(self.killSubroutines[subRoutineToKill])
 				self.taskStatus = "success"
 				self.StatePub.publish(self.taskStatus + " " + str(self.currentTask))
+				# If python uses pointers, fix this
+				self.lastTask = self.currentTask
 				self.subroutineStatus = "idle"
 				self.taskStatus = "task_not_started"
 
@@ -71,7 +74,7 @@ class robotStateNode():
 		parameterString = ""
 		for i in range(1,len(taskWithParam)):
 			parameterString = parameterString + "P" + str(i) + ":=" + taskWithParam[i] + " "			# For each paramter convert it to a string to make it a system call
-		if (self.taskStatus != "in_progress"):
+		if (self.taskStatus != "in_progress" and self.lastTask != self.currentTask):
 			os.system(self.currentSubroutine + " " + parameterString)
 			print(self.currentSubroutine + " " + parameterString)
 			self.taskStatus = "in_progress"
@@ -87,6 +90,7 @@ class robotStateNode():
 		self.subroutineStatus = "idle"
 		self.taskStatus = "task_not_started"
 		self.currentSubroutine = None
+		self.lastTask = ""
 
 		# Maintain a list of subroutines to be called for each sub task the TaskList sends
 		self.subroutines = {
