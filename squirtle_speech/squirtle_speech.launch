@@ -1,0 +1,9 @@
+<launch>
+
+  <!-- Argument to set the object or location for the Navigation Stack-->
+  <arg name="P1" default="Hi_I_am_Squirtle"/>
+
+  <!-- Launch the node that communicates between the subroutines -->
+  <node name="speechStatus" type="speechStatus.py" pkg="squirtle_speech" args="$(arg P1)" />
+  
+</launch>

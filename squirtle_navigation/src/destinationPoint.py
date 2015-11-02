@@ -3,6 +3,8 @@
     Node to get the destination for the robot to travel to
     Convert it to x and y co-ordinates and send it move base
     through the action server
+    Publishes - MoveBaseClient service
+    Subscribes  - /goToPoint
     Author: Siddharth Srivatsa
 '''
 

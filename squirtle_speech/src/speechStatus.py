@@ -36,7 +36,7 @@ class speechStatus():
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
 		rospy.Subscriber("/current_task", String, self.CurTaskCallback)
 		rospy .Subscriber("/nexusMessage", String, self.buttonCallback)
-		rate = rospy.Rate(50) # Publish at 10hz
+		rate = rospy.Rate(10) # Publish at 10hz
 
 		while not rospy.is_shutdown():
 			if self.buttonPress == "button_pressed":
