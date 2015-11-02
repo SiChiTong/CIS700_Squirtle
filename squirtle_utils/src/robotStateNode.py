@@ -104,10 +104,10 @@ class robotStateNode():
 		}
 
 		self.killSubroutines = {
-			'go_to_room' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
-			'retrieve_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/killSpeechNodes.sh',
-			'deliver_object' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/killSpeechNodes.sh',
-			'find_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/killSpeechNodes.sh',
+			'go_to_room' : '~/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
+			'retrieve_object' : '~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/killSpeechNodes.sh',
+			'deliver_object' : '~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/killSpeechNodes.sh',
+			'find_person' : '~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/killSpeechNodes.sh',
 			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
 			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/include/NavigationKillNodes.sh',
