@@ -1,0 +1,19 @@
+This README contains the basc instructions for testing out the capabilities of squirtle for the intermediate task. Last updated - 3rd Nov.
+
+Open Terminal
+roslaunch turtlebot_bringup minimal.launch
+New window - rosrun squirtle_utils tasklist.py
+New window - rosrun squirtle_utils robotStateNode.py
+
+The above three windows are constant, and we do not edit them. The 
+
+For speech tasks -
+To simulate the button actions - 
+New window - rostopic pubpub -r 5 /nexusMessage std_msgs/String button_not_pressed (It should keep shouting now) ctrl+C
+rostopic pubpub -r 5 /nexusMessage std_msgs/String button_pressed (It should stop shouting, and move on to the next task)
+
+For navigation tasks -
+Wait for the message "Odom received!" to appear on the terminal with the robotStateNode. Then open a new window and open rviz. Set the initial position of the robot through rviz.
+New window - rosrun squirtle_navigation destination.py. (Kill this node, once the robot starts moving)
+
+
