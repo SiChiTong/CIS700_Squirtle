@@ -46,7 +46,7 @@ class robotStateNode():
 				self.taskStatus = "task_not_started"
 
 			elif (self.subroutineStatus == "error"):
-				os.system(self.killSubroutines(self.currentSubroutine))
+				os.system(self.killSubroutines[self.currentSubroutine])
 				# Nodes may get reset, you will lose data
 				self.taskStatus = "fail"
 				#os.system("Find Why you failed and act accordingly?")
