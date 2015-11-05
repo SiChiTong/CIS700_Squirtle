@@ -6,12 +6,12 @@
    
 
   <!-- rplidar mapping group, used on turtlebot with rplidar like squirtle-->
-  <group name="rplidar_mapping" if="$(arg use_rplidar)" >
+  <group if="$(arg use_rplidar)" >
     <include file="$(find mapping_launch)/launchfiles/mapping_turtlebot_rplidar.launch" />
   </group>
 
   <!-- kinect mapping group, used on standard turtlebot -->
-  <group name="kinect_gmapping" unless="$(arg use_rplidar)" >
+  <group unless="$(arg use_rplidar)" >
     <!-- kinect laser part  --> 
     <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
       <arg name="rgb_processing" value="false" />
