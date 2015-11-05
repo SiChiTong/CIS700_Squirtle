@@ -29,7 +29,7 @@ int main(int argc, char** argv){
     //call the service 
     hector_nav_msgs::GetRobotTrajectory get_path_srv;
     explo_path_getter.call(get_path_srv);
-    ROS_INFO("Sending goal");
+    ROS_INFO("exploration path get.");
 
     //get the last pose in trajectory (which is the goal)
     int path_length = get_path_srv.response.trajectory.poses.size()-1;
@@ -48,8 +48,9 @@ int main(int argc, char** argv){
     goal.target_pose.header.stamp = ros::Time::now();
     goal.target_pose.pose = last_pose.pose;
 
-    ROS_INFO("Sending goal");
+
     ac.sendGoal(goal);
+    ROS_INFO("Sent goal to movebase");
 
     //Wait until goal reached or aborted
     ac.waitForResult();
@@ -57,14 +58,13 @@ int main(int argc, char** argv){
     if(ac.getState() == actionlib::SimpleClientGoalState::SUCCEEDED)
       ROS_INFO("Succeed, looking for a new goal...");
     else
-      ROS_INFO_STREAM(ac.getState().toString());
-      ROS_INFO("Failed to reach goal, looking for a new goal...");
+      ROS_INFO_STREAM(ac.getState().toString()<<": Failed to reach goal, looking for a new goal...");
 
     ros::spinOnce();
     
     // Wait for 2 second before going to next goal
     // This will allow the mapper to update
-    ros::Duration(0.5).sleep(); 
+    ros::Duration(2).sleep(); 
 
   }
   return 0;
