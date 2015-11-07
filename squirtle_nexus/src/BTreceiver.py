@@ -18,10 +18,20 @@ from std_msgs.msg import String
 from std_msgs.msg import Bool
 
 class BTreceiver():
+
+  def stateCallback(self, data):
+    self.state = data.data;
+
   def __init__(self):
+    self.state = ""
     # setup
     rospy.init_node("BTreceiver") 
-    self.pub = rospy.Publisher('nexusMessage', String, queue_size=10)
+    #publisher
+    self.pub = rospy.Publisher('nexusMessage', String, queue_size=1)
+    #self.debugpub = rospy.Publisher('BTdebug', String, queue_size=1)
+    #subscriber
+    self.sub = rospy.Subscriber("/current_task", String, self.stateCallback)
+    rate = rospy.Rate(10)
 
     # Setup Bluetooth 
     os.system("sudo sdptool add --channel=22 SP");
@@ -33,13 +43,30 @@ class BTreceiver():
     ser = serial.Serial()
     ser.port = "/dev/rfcomm0" # may be called something different
     ser.baudrate = 9600 # may be different
+    ser.timeout = 0 # may be different
     ser.open()
 
     rate = rospy.Rate(10) # 10hz
-    while(ser.isOpen()): #ser.write("hello")
-      btMessage = ser.read()
-      self.pub.publish(btMessage)
+    android_data = ""
+    oldData = ""
+    #self.debugpub.publish('line 50:')
+    while(ser.isOpen()):  
+      if oldData != self.state:     
+        ser.write(self.state)
+        oldData = self.state
+
+      if ser.inWaiting>0:
+        btMessage = ser.read()
+        #self.debugpub.publish(btMessage)
+        self.pub.publish(self.state)
+        if btMessage == "$":
+          self.pub.publish(android_data)
+          android_data = "";
+        else:
+          android_data = android_data+btMessage;
+      rate.sleep()
     btMessage = "Lost Bluetooth Connection!! HELP!!"
+    self.pub.publish(btMessage)
     rospy.spin();
 
 if __name__ == '__main__':

@@ -22,10 +22,10 @@ class tasklist():
 	def __init__(self):
 		# setup
 		self.history = deque([])
-		self.command_queue = deque(["find_person Pack_of_chips", "go_to_room charity_office", "deliver_object Pack_of_Chips", "go_to_room GRASP_Lab"])
+		self.command_queue = deque(["retrieve_object Pack_of_chips", "find_person awesome_david", "go_to_room charity_office", "deliver_object Pack_of_Chips", "go_to_room GRASP_Lab"])
 		self.server_list =[]
 		rospy.init_node("tasklist")	
-		self.pub = rospy.Publisher('current_task', String, queue_size=10)
+		self.pub = rospy.Publisher('current_task', String, queue_size=1)
 		# self.sub = rospy.Subscriber("/serverstuff",String,self.ServerMessageCallback)
 		self.sub2 = rospy.Subscriber("/RobotState",String,self.RobotStateCallback)
 		rate = rospy.Rate(10) # 10hz
