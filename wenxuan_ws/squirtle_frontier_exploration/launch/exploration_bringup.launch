@@ -30,12 +30,18 @@
   <!-- move_base part -->
   <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
   <!--TODO: add move_base param override here -->
+  <!-- overriding obstacle height -->
+ 		<rosparam file="$(find squirtle_frontier_exploration)/config/costmap_common_params.yaml" command="load" ns="move_base/global_costmap" />
+  		<rosparam file="$(find squirtle_frontier_exploration)/config/costmap_common_params.yaml" command="load" ns="move_base/local_costmap" /> 
 
+  		<!-- override local planner, mainly lower the speed limit to suit for mapping -->
+ 		<rosparam file="$(find squirtle_frontier_exploration)/config/dwa_local_planner_params.yaml" command="load" ns="move_base" />
 
 
   <!-- exploration planner part -->
   <include file="$(find hector_exploration_node)/launch/exploration_planner.launch"/>
-
+  		<!-- override exploration planner parameters -->
+  		<rosparam file="$(find squirtle_frontier_exploration)/config/exploration_costmap.yaml" command="load" ns= "hector_exploration_node"/>
 
 
 </launch>
