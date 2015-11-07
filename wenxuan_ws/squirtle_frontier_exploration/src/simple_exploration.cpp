@@ -31,9 +31,15 @@ int main(int argc, char** argv){
     explo_path_getter.call(get_path_srv);
     ROS_INFO("exploration path get.");
 
+    if (get_path_srv.response.trajectory.poses.size() == 0)
+    {
+      ROS_ERROR_STREAM("Exploration done. (planner path empty)");
+      break; 
+    }
+
     //get the last pose in trajectory (which is the goal)
-    int path_length = get_path_srv.response.trajectory.poses.size()-1;
-    geometry_msgs::PoseStamped last_pose = get_path_srv.response.trajectory.poses[path_length];
+    int path_length = get_path_srv.response.trajectory.poses.size();
+    geometry_msgs::PoseStamped last_pose = get_path_srv.response.trajectory.poses[path_length-1];
 
     //Now we have the goal from hector_exploration_node, we need to pass it to move_base goal
 
