@@ -1,24 +1,16 @@
 <launch>
 <!-- Launch file to bringup all the stuff running on squirtle -->
 
-    <!-- Arguments to check for conditions to run things -->
-    <arg name="mapping" value="1"/>		
-    <arg name="keyboard_teleop" value="0"/>
-    <arg name="frontier_explore" value="1"/>
+    <!-- Launch minimal -->
+	<include file ="$(find turtlebot_bringup)/launch/minimal.launch"/>
 
-	 <!-- <include file ="$(find turtlebot_bringup)/launch/minimal.launch"/>-->
-
-    <!-- Node to publish fake laser scan to remove NaN's and publish max range of 10m instead -->
-	<node pkg="squirtle_mapping" type="fake_laser.py" name="fake_laser" output="screen" respawn="false"/>
-
-	<include file ="$(find squirtle_mapping)/launch/squirtleGmapping.launch"/>
-
-    <group if="$(arg frontier_explore)">
-	<include file ="$(find frontier_exploration)/launch/global_map.launch"/>
-	<include file ="$(find squirtle_mapping)/launch/frontierExplorationSquirtle.launch"/>
-    </group>
+    <!-- Bring up the task list -->
+	<node pkg="squirtle_utils" type="tasklist.py" name="tasklist" output="screen" respawn="true"/>
+    
+    <!-- Bring up the robot state node -->
+	<node pkg="squirtle_utils" type="robotStateNode.py" name="robotState" output="screen" respawn="true"/>
 
     <!-- Bring up Rviz with the default configuration for Squirtle -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find squirtle_bringup)/include/squirtle.rviz" required="true">
+	<!-- node name="rviz" pkg="rviz" type="rviz" args="-d $(find squirtle_bringup)/include/squirtle.rviz" required="true" -->
 
 </launch>

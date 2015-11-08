@@ -29,7 +29,7 @@ class robotStateNode():
 		print(self.subroutineStatus)
 		rospy.Subscriber("/current_task", String, self.TaskListMessageCallback)
 		rospy.Subscriber("/current_subroutine_status", String, self.SubroutineStatusMessageCallback)
-		self.StatePub = rospy.Publisher('RobotState', String, queue_size=10)
+		self.StatePub = rospy.Publisher('robot_state', String, queue_size=10)
 		
 		rate = rospy.Rate(10) # Publish at 10hz
 		while not rospy.is_shutdown():
