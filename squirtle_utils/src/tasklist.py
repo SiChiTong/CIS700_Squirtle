@@ -27,7 +27,7 @@ class tasklist():
 		rospy.init_node("tasklist")	
 		self.pub = rospy.Publisher('current_task', String, queue_size=1)
 		# self.sub = rospy.Subscriber("/serverstuff",String,self.ServerMessageCallback)
-		self.sub2 = rospy.Subscriber("/RobotState",String,self.RobotStateCallback)
+		self.sub2 = rospy.Subscriber("/robot_state",String,self.RobotStateCallback)
 		rate = rospy.Rate(10) # 10hz
 		while not rospy.is_shutdown():
 			if len(self.command_queue)>0:
