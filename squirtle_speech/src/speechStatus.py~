@@ -43,10 +43,8 @@ class speechStatus():
 		rate = rospy.Rate(10) # Publish at 10hz
 
 		while not rospy.is_shutdown():
-			#if self.buttonPress == "button_pressed":
-			if self.fixmeflag == 1:
+			if self.buttonPress == "button_pressed":
 				self.SubRoutineStatusPub.publish("complete")
-				self.fixmeflag=0
 			elif self.buttonPress == "button_not_pressed":
 				os.system(self.speechCommand[self.speechTask] + " " + argument)
 				self.SubRoutineStatusPub.publish("going_on")

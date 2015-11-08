@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<launch>
+  
+  <arg name="use_rplidar" default="false"/> 
+   
+
+  <!-- rplidar mapping group, used on turtlebot with rplidar like squirtle-->
+  <group if="$(arg use_rplidar)" >
+    <include file="$(find mapping_launch)/launchfiles/mapping_turtlebot_rplidar.launch" />
+  </group>
+
+  <!-- kinect mapping group, used on standard turtlebot -->
+  <group unless="$(arg use_rplidar)" >
+    <!-- kinect laser part  --> 
+    <include file="$(find turtlebot_bringup)/launch/3dsensor.launch">
+      <arg name="rgb_processing" value="false" />
+      <arg name="depth_registration" value="false" />
+      <arg name="depth_processing" value="false" />
+      
+      <!-- We must specify an absolute topic name because if not it will be prefixed by "$(arg camera)".
+           Probably is a bug in the nodelet manager: https://github.com/ros/nodelet_core/issues/7 --> 
+      <arg name="scan_topic" value="/scan" />
+    </include>
+
+    <!-- gmapping part  --> 
+    <include file="$(find turtlebot_navigation)/launch/includes/gmapping.launch.xml"/>
+  </group>
+
+  <!-- move_base part -->
+  <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
+  <!--TODO: add move_base param override here -->
+  <!-- overriding obstacle height -->
+ 		<rosparam file="$(find squirtle_frontier_exploration)/config/costmap_common_params.yaml" command="load" ns="move_base/global_costmap" />
+  		<rosparam file="$(find squirtle_frontier_exploration)/config/costmap_common_params.yaml" command="load" ns="move_base/local_costmap" /> 
+
+  		<!-- override local planner, mainly lower the speed limit to suit for mapping -->
+ 		<rosparam file="$(find squirtle_frontier_exploration)/config/dwa_local_planner_params.yaml" command="load" ns="move_base" />
+
+
+  <!-- exploration planner part -->
+  <include file="$(find hector_exploration_node)/launch/exploration_planner.launch"/>
+  		<!-- override exploration planner parameters -->
+  		<rosparam file="$(find squirtle_frontier_exploration)/config/exploration_costmap.yaml" command="load" ns= "hector_exploration_node"/>
+
+
+</launch>
