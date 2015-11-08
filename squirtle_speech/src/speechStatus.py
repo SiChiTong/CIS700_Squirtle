@@ -5,7 +5,7 @@ Node to send speech status to the robot state
 by Siddharth Srivatsa
 
 Publishes - /current_subroutine_status
-
+Subscribes - /nexusMessage, /current_task
 '''
 
 
@@ -21,6 +21,7 @@ class speechStatus():
 	def CurTaskCallback(self, data):
 		self.speechTask = data.data.partition(' ')[0]
 
+#	Check which button is pressed on the nexus 
 	def buttonCallback(self, data):
 		self.buttonPress = data.data
 		if self.buttonPress == "button_pressed":
@@ -28,21 +29,23 @@ class speechStatus():
 
 	def __init__(self, argument):
 		self.fixmeflag = 0
-	
 		self.subRoutineStatus = 0
 		self.buttonPress = "not_init"
+#		Map the tasks to the appropriate voice commands
 		self.speechCommand = {
 			'retrieve_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_retrieve_object.py',
 			'deliver_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_object.py',
 			'find_person' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_find_person.py',
 		}
 		rospy.init_node("speechStatus", anonymous=True)
+#		Initialize the publishers and subscribers
 		self.SubRoutineStatusPub = rospy.Publisher('current_subroutine_status', String, queue_size=10)
 		rospy.Subscriber("/current_task", String, self.CurTaskCallback)
 		rospy .Subscriber("/nexusMessage", String, self.buttonCallback)
 		rate = rospy.Rate(10) # Publish at 10hz
 
 		while not rospy.is_shutdown():
+#			Publish the appropriate message according to which button is pressed
 			#if self.buttonPress == "button_pressed":
 			if self.fixmeflag == 1:
 				self.SubRoutineStatusPub.publish("complete")
@@ -53,7 +56,6 @@ class speechStatus():
 			else:
 				self.SubRoutineStatusPub.publish("Not initialized")
 			rate.sleep()
-
 		rospy.spin()
 
 if __name__ == '__main__':
