@@ -14,9 +14,9 @@
   <arg name="map_file" default="$(find squirtle_navigation)/include/map_levine4th.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
-  <arg name="initial_pose_x" default="0.0"/> 
-  <arg name="initial_pose_y" default="0.0"/> 
-  <arg name="initial_pose_a" default="0.0"/>
+    <arg name="initial_pose_x" default="2.20424320025"/> 
+    <arg name="initial_pose_y" default="1.33934123128"/> 
+    <arg name="initial_pose_a" default="3.10"/>
   <include file="$(find turtlebot_navigation)/launch/includes/amcl.launch.xml">
     <arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
     <arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
