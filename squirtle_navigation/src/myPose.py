@@ -28,14 +28,21 @@ class myPose():
 		self.updatePos = 1
 		self.lastTask = ""
 		self.myPosition = PoseWithCovarianceStamped()
+		self.myPosition.pose.pose.position.x = 2.20424320025
+		self.myPosition.pose.pose.position.y = 1.33934123128
+		self.myPosition.pose.pose.position.z = 0.0
+		self.myPosition.pose.pose.orientation.x = 0.0
+		self.myPosition.pose.pose.orientation.y = 0.0
+		self.myPosition.pose.pose.orientation.z = 0.99947076813
+		self.myPosition.pose.pose.orientation.w = 0.0325297349128
 
 		rate = rospy.Rate(10);
 		while not rospy.is_shutdown():
 			if self.newTask == 1:
-				print self.myPosition
 				rospy.sleep(8.)
 				self.myPosition.header.frame_id = "map"
 				self.myPosition.header.stamp = rospy.Time.now()
+				print self.myPosition
 				self.pub.publish(self.myPosition)
 				self.lastTask = self.currentTask
 				self.newTask = 0
