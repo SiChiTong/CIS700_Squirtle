@@ -10,6 +10,8 @@
     <!-- Bring up the robot state node -->
 	<node pkg="squirtle_utils" type="robotStateNode.py" name="robotState" output="screen" respawn="true"/>
 
+	<node name="myPose" pkg="squirtle_navigation" type="myPose.py" output="screen"/>
+
     <!-- Bring up Rviz with the default configuration for Squirtle -->
 	<!-- node name="rviz" pkg="rviz" type="rviz" args="-d $(find squirtle_bringup)/include/squirtle.rviz" required="true" -->
 
