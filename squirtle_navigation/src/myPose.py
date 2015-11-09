@@ -39,7 +39,7 @@ class myPose():
 		rate = rospy.Rate(10);
 		while not rospy.is_shutdown():
 			if self.newTask == 1:
-				rospy.sleep(8.)
+				rospy.sleep(7.)
 				self.myPosition.header.frame_id = "map"
 				self.myPosition.header.stamp = rospy.Time.now()
 				print self.myPosition
