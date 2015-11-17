@@ -1,0 +1,7 @@
+<launch>
+
+  <node name="arbotix" pkg="arbotix_python" type="arbotix_driver" output="screen">
+      <rosparam file="$(find squirtle_arm)/config/squirtle_arm.yaml" command="load" />
+  </node>
+
+</launch>
