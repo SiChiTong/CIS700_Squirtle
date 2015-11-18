@@ -16,6 +16,6 @@
 	<!-- node name="rviz" pkg="rviz" type="rviz" args="-d $(find squirtle_bringup)/include/squirtle.rviz" required="true" -->
 	
 	<!-- BTreceiver node for Nexus -->
-	<!--node name="BTreceiver" pkg="squirtle_nexus" type="BTreceiver.py" output="screen"-->
+	<node name="BTreceiver" pkg="squirtle_nexus" type="BTreceiver.py" output="screen"/>
 
 </launch>

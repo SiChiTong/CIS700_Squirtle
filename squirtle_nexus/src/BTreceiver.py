@@ -34,19 +34,20 @@ class BTreceiver():
     rate = rospy.Rate(10)
 
     # Setup Bluetooth 
-    os.system("sudo sdptool add --channel=22 SP");
-    os.system("sudo rfcomm listen /dev/rfcomm0 22 &");
-    print("YOU HAVE 8 SECONDS TO CONNECT THE APP!!!!!!!!!")
-    time.sleep(8) ## 
+    os.system("sudo sdptool add --channel=16 SP");
+    os.system("sudo rfcomm listen /dev/rfcomm6 16 &");
+    print("YOU HAVE 10 SECONDS TO CONNECT THE APP!!!!!!!!!")
+    time.sleep(10) ## 
 
     # Serial port setup
     ser = serial.Serial()
-    ser.port = "/dev/rfcomm0" # may be called something different
+    ser.port = "/dev/rfcomm6" # may be called something different
     ser.baudrate = 9600 # may be different
     ser.timeout = 0 # may be different
+    
     ser.open()
 
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(8) # 10hz
     android_data = ""
     oldData = ""
     #self.debugpub.publish('line 50:')

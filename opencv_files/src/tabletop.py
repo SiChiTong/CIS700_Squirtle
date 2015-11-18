@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import sys, time
 import numpy as np
-from scipy.ndimage import filters
+#from scipy.ndimage import filters
 import roslib
 import rospy
 import cv2
 import sys
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
+import time
 
 class Test:
 
@@ -15,6 +16,8 @@ class Test:
         self.image_sub = rospy.Subscriber("/camera/depth/image",Image, self.callback, queue_size = 1)
         #self.image_pub = rospy.Publisher("test_image", Image, queue_size = 1)
         self.bridge = CvBridge()
+        self.time = time.time()
+
 
     def callback(self, image):
         try:
@@ -24,9 +27,24 @@ class Test:
 
         #np_arr = np.fromstring(image.data, np.uint8) #only 1 channel?
         np_arr = np.fromstring(cv_image, np.uint8)
-        print cv_image.shape
+        #print cv_image.shape
+        print 'fps: ',1.0/(time.time()-self.time)
+        self.time = time.time()
+        
+        n,m = cv_image.shape
+        k = 3
+        im = np.reshape(cv_image,(np.size(cv_image),1))
+        y,x = np.meshgrid(range(n),range(m))
+        triples = (np.reshape(cv_image,(np.size(x),1)), np.reshape(cv_image,(np.size(x),1)), im)
+        #tr = np.array(triples) # kills the runtime
+        #print np.shape(tr)
+        #triples = tr[:,~np.isnan(tr[2,:])]
 
-        # computation
+        #newim = np.reshape(tr[2,:],(n,m))
+        
+        #print im
+        '''
+        # computation, making this list is about 4fps
         n = 480
         m = 640
         k = 3
@@ -41,7 +59,7 @@ class Test:
                 triples[i*n + j,2] = cv_image[j,i]
         merp = triples[:,2]
         triples = triples[~np.isnan(merp),:]  
-
+        
         # RANSAC   
         it = 10
         one = (3,1)
@@ -70,9 +88,10 @@ class Test:
         rgb_im = cv2.cvtColor(cv_image,cv2.COLOR_GRAY2RGB)
         for i in range(triples.shape[0]):
             rgb_im[triples[i,0],triples[i,1],0] = 255
+        '''
 
-
-        cv2.imshow("Test", rgb_im)
+        cv2.imshow("Test", cv_image)
+        #cv2.imshow("Test", rgb_im)
     
         cv2.waitKey(1)
         
