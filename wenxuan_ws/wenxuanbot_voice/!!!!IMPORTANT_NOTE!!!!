@@ -8,5 +8,10 @@ $ rosdep install audio_capture
 
 (then the required package may install, if not, try install dependency using similar command like above)
 
-
 If problem still exist(with make this into catkin workspace), please remove this folder from catkin_ws
+
+
+if runtime errors occured or the recognition is not working, try following command to install dependencies
+$ sudo apt-get install gstreamer0.10-gconf
+$ sudo apt-get install gstreamer0.10-pocketsphinx
+
