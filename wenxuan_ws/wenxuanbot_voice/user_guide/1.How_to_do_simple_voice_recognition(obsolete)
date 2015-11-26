@@ -1,21 +1,21 @@
-NOTE:
-We previously used the PulseAudio source, which is the default package setting.
-But it turns out to be unstable(randomly go offline) in our implementation.
-We change the source to "alsasrc" and works fine.
+NOTE: This tutorial is obsolete.A newer and stable version is available.
 
 This Tutorial will tell you how to use ROS package pocketsphinx to do a simple speech-to-text
 
 Prerequisite:
 	You need to set sound input to your mic(in System Settings, Sound) 
+	You need to have your PulseAudio Source Name (e.g. My mic has a name of "alsa_card.usb-C-Media_Electronics_Inc._USB_PnP_Sound_Device-00-Device"), how-to-find-it is in Tutorial0
+
 
 Steps:
+	1. Open pocketsphinx/example/robocup.launch, Change the parameter "mic_name" to your PulseAudio Source Name.
 
-	1. Launch the launch file. 
+	2. Launch the launch file.
 		$ roslaunch pocketsphinx robocup.launch
 
 		Now that you can say something and text will displayed on screen
 
-	2. Topics and Services
+	3. Topics and Services
 		It publishes text String to /recognizer/output topic
 		It provides Service /recognizer/start and /recognizer/stop, which could be used to do controled recognition rather than continuous recognition(proves to be not robust)
 
