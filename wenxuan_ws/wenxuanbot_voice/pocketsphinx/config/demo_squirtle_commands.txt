@@ -1,0 +1,25 @@
+turtlebot
+squirtle
+introduce yourself
+go forward
+go backward
+move forward
+move backward
+turn left
+turn right
+spin fast
+speed up
+speed down
+faster
+slower
+power shut down 
+begin exploration
+cancel exploration
+mute
+mimic my voice
+stop mimic
+go to my left
+go to my right
+go to the back
+
+
