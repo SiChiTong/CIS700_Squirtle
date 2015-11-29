@@ -1,6 +1,6 @@
 <launch>
 	
- 	<node name="recognizer" pkg="pocketsphinx" type="recognizer.py" output="screen">
+ 	<node name="recognizer" pkg="pocketsphinx" type="recognizer.py">
   		<param name="source" value="alsasrc" />
     	<param name="lm" value="$(find pocketsphinx)/config/demo_squirtle_command.lm"/>
     	<param name="dict" value="$(find pocketsphinx)/config/demo_squirtle_command.dic"/>
@@ -8,7 +8,7 @@
 
 	<node name="soundplay_node" pkg="sound_play" type="soundplay_node.py"/>
 	
-	<node name="demo_voice_command" pkg="squirtle_voice_command" type="demo_voice_command.py"/>
+	<node name="demo_voice_command" pkg="squirtle_voice_command" type="demo_voice_command.py" output="screen"/>
 
 
 </launch>
