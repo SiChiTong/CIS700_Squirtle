@@ -3,25 +3,47 @@
 import sys
 import rospy
 #from sound_play.msg import SoundRequest
-
 from sound_play.libsoundplay import SoundClient
+from std_msgs.msg import String
 
-rospy.init_node('say', anonymous = True)
-soundhandle = SoundClient()
-rospy.sleep(1)
+class DemoVoiceCommand:
+    """docstring for demo_voice_command"""
+    def __init__(self):
+        rospy.init_node('demo_voice_command', anonymous = True)
+        self.soundhandle = SoundClient()
+        rospy.sleep(1)
 
-#voice = 'voice_kal_diphone'
-#voice = 'voice_cmu_us_clb_arctic_clunits'
-#voice = 'voice_cmu_us_slt_arctic_clunits'
-voice = 'voice_cmu_us_rms_arctic_clunits'
+        #voice = 'voice_kal_diphone'
+        #voice = 'voice_cmu_us_clb_arctic_clunits'
+        #voice = 'voice_cmu_us_slt_arctic_clunits'
+        self.voice = 'voice_cmu_us_rms_arctic_clunits'
 
-volume = 1.0
+        self.volume = 1.0
 
-s = "Hello world"
+        openup_string = "Hello world"
 
-print 'Saying: %s' % s
-print 'Voice: %s' % voice
-print 'Volume: %s' % volume
+        print 'Saying: %s' % openup_string
+        print 'Voice: %s' % self.voice
+        print 'Volume: %s' % self.volume
 
-soundhandle.say(s, voice, volume)
-rospy.sleep(1)
+        self.soundhandle.say(openup_string, self.voice, self.volume)
+        rospy.sleep(1)
+        self.soundhandle.stopAll()
+
+
+        rospy.Subscriber('/recognizer/output',String,self.receive_speech_callback)
+
+    def receive_speech_callback(self,msg):
+        # print what it recognized
+        rospy.loginfo(msg.data)
+        
+        # speak what it recognized
+        self.soundhandle.say(msg.data,self.voice)
+
+
+if __name__=="__main__":
+    try:
+        DemoVoiceCommand()
+        rospy.spin()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Voice command finished")
