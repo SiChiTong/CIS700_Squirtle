@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
     # Import after printing usage for speed.
     import rospy
-    from sound_play.msg import SoundRequest
+    #from sound_play.msg import SoundRequest
     from sound_play.libsoundplay import SoundClient
     
     if len(sys.argv) == 1:
