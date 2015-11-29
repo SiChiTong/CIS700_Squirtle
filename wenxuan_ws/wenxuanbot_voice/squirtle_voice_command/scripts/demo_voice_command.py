@@ -39,7 +39,7 @@ class DemoVoiceCommand:
         
         # speak what it recognized
         self.soundhandle.say(msg.data,self.voice)
-
+        rospy.sleep(3)
 
 if __name__=="__main__":
     try:
