@@ -41,7 +41,11 @@ from demo_voice_command import *
 class Action_thread(threading.Thread):
     """this class is for multi-threading an action task"""
 
+
     def __init__(self, voice_command_obj,action_type,action_arg):
+        # voice_command_obj: a voice command obj(the next class in this file)
+        # action_type: string indicating action type, including "move", "turn", "spin", "goto"
+        # action_arg: arguments specified for each action, e.g move is direction, turn is direction, goto is destination, spin is duration
         super(Action_thread, self).__init__()
         self.voice_command_obj = voice_command_obj
         self.action_type = action_type
@@ -67,7 +71,7 @@ class Action_thread(threading.Thread):
         # publish empty twist to stop it
         # set the _stop, to indicate stop, need to check the _stop state during running
         self._stop.set()
-        self.voice_command_obj.say(["action stopped","current task canceled"])
+        self.voice_command_obj.say(["copy that , action stopped","no problem, current task canceled"])
 
         
     def stopped(self):
@@ -140,12 +144,12 @@ class Demo_voice_command:
                                     'stop mimic': ['stop mimic','exit mimic'],
                                     'go to task': ['go to'],
                                     'introduce': ['introduce yourself'],
-                                    'report state': ['are you busy','doing anything','what are you doing'],
+                                    'report state': ['are you busy','doing anything','what are you doing', "your task"],
                                     'nothing':['nothing','no thanks','dismiss'],
                                     'greetings':['how are you','hello turtlebot','greetings turtlebot','whats up'],
                                     
                                     # stop has been put to last priority, so that it will only recognized if it's nothing above
-                                    'stop task':['stop']
+                                    'stop task':['stop your task', 'stop current task']
                                     }
 
 
@@ -158,7 +162,7 @@ class Demo_voice_command:
         # choose randomly from giving strings to rendor diversity
         # note that strings_to_say is a LIST of string, do not forget to add []
         string_to_say = random.choice(strings_to_say)
-        delay_length = len(string_to_say)/14.0
+        delay_length = len(string_to_say)/13.5
 
         self.recognizer_stop()
         self.soundhandle.say(string_to_say, self.voice, 1.0)
@@ -207,9 +211,14 @@ class Demo_voice_command:
 
             elif command == 'stop task':
                 try:
-                    self.thread1.stop()
+                    if self.thread1.stopped():
+                        self.say(['task do not exist, sir'])
+                    else:
+                        self.thread1.stop()
+                    self.current_state = "free"
                 except Exception, e:
                     self.say(['task do not exist, sir'])
+                    self.current_state = "free"
 
             elif command == "nothing":
                 self.say(["ok, sir, good luck","sure, i will keep standing by","Hmm, fine, call me when you need","anytime, sir","ok","as you wish"])
