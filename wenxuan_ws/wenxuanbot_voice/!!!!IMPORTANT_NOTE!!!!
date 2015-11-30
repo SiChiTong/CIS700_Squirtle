@@ -15,3 +15,8 @@ if runtime errors occured or the recognition is not working, try following comma
 $ sudo apt-get install gstreamer0.10-gconf
 $ sudo apt-get install gstreamer0.10-pocketsphinx
 
+If you encounter runtime errors saying that festival voice stuff. 
+That's probably because you didn't install festival additional voice package that the script using.
+You can find step-by-step tutorials installing such packages in "userguide" folder.
+Or you can simply select default voice by uncommenting "self.voice = 'voice_kal_diphone'" line.
+
