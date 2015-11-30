@@ -90,9 +90,9 @@ class Action_thread(threading.Thread):
         # assign vel cmd msg
         self.voice_command_obj.cmd_vel = Twist()
         if direction == "forward":
-            self.voice_command_obj.cmd_vel.linear.x = 0.5
+            self.voice_command_obj.cmd_vel.linear.x = 0.3
         if direction == "backward":
-            self.voice_command_obj.cmd_vel.linear.x = -0.5
+            self.voice_command_obj.cmd_vel.linear.x = -0.3
 
         self.voice_command_obj.say(["moving " + direction + " for two second"])
         r = rospy.Rate(5)
@@ -116,9 +116,9 @@ class Action_thread(threading.Thread):
         # assign empty cmd
         self.voice_command_obj.cmd_vel = Twist()
         if direction == "left":
-            self.voice_command_obj.cmd_vel.angular.z = 0.5
+            self.voice_command_obj.cmd_vel.angular.z = 0.3
         if direction == "right":
-            self.voice_command_obj.cmd_vel.angular.z = -0.5
+            self.voice_command_obj.cmd_vel.angular.z = -0.3
 
         self.voice_command_obj.say(["moving " + direction + " for thirty second"])
         r = rospy.Rate(5)   
@@ -130,6 +130,9 @@ class Action_thread(threading.Thread):
             else:
                 self.voice_command_obj.cmd_vel_pub.publish(self.voice_command_obj.cmd_vel)
                 r.sleep()
+        
+        self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
+        self.cleanup()
 
     def action_goto(self,destination):
         self.voice_command_obj.say(["sorry, sir, this method is not implemented yet, going back to free state"])
@@ -139,8 +142,6 @@ class Action_thread(threading.Thread):
         self.voice_command_obj.say(["sorry, sir, this method is not implemented yet, going back to free state"])
         self.cleanup()
         
-
-
 
 class Demo_voice_command:
     """This script is for demo of voice command of Team4 squirtle"""
@@ -221,6 +222,7 @@ class Demo_voice_command:
         # enter finite state machine state switcher
         self.state_switcher(msg,command)
 
+        rospy.loginfo("now at " + self.current_state + " state")
 
 
     def state_switcher(self,msg,command):
@@ -327,7 +329,7 @@ class Demo_voice_command:
 
         elif self.current_state == "mimic":
             # mimic state for debugging voice, will repeat what it hear
-            if command == "stop mimic":
+            if command == "stop mimic" or command == "stop":
                 self.say(["yes, sir, exiting mimic state, now i'm at free state"])
                 self.current_state = "free"
             else:
