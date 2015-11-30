@@ -34,13 +34,12 @@ from sound_play.libsoundplay import SoundClient
 from std_msgs.msg import String
 import std_srvs.srv
 import random
-import thread
 import threading
-from demo_voice_command import *
+from geometry_msgs.msg import Twist
+
 
 class Action_thread(threading.Thread):
     """this class is for multi-threading an action task"""
-
 
     def __init__(self, voice_command_obj,action_type,action_arg):
         # voice_command_obj: a voice command obj(the next class in this file)
@@ -71,33 +70,74 @@ class Action_thread(threading.Thread):
         # publish empty twist to stop it
         # set the _stop, to indicate stop, need to check the _stop state during running
         self._stop.set()
-        self.voice_command_obj.say(["copy that , action stopped","no problem, current task canceled"])
+        self.voice_command_obj.say(["no problem, current task canceled"])
+        self.cleanup()
 
-        
+    def cleanup(self):
+        self.voice_command_obj.current_state = "free"
+        self._stop.set()
+        self.voice_command_obj.cmd_vel = Twist()
+        self.voice_command_obj.cmd_vel_pub.publish(self.voice_command_obj.cmd_vel)
+
     def stopped(self):
         return self._stop.isSet()
 
     def action_move(self,direction):
-        self.voice_command_obj.say(["ok, sir, preparing to move " + direction,"command received, going "+ direction])
+        self.voice_command_obj.say(["ok sir preparing to move " + direction,"command received, going "+ direction])
         self.voice_command_obj.current_state = "busy"
         self.voice_command_obj.busy_task = "moving "+ direction
-        # TODO: add checking _stop sign and execute action here, if stopped set the current state to free
-        for x in xrange(1,30):
+        
+        # assign vel cmd msg
+        self.voice_command_obj.cmd_vel = Twist()
+        if direction == "forward":
+            self.voice_command_obj.cmd_vel.linear.x = 0.5
+        if direction == "backward":
+            self.voice_command_obj.cmd_vel.linear.x = -0.5
+
+        self.voice_command_obj.say(["moving " + direction + " for two second"])
+        r = rospy.Rate(5)
+
+        for x in xrange(1,10):
             if self.stopped():
-                #TODO: stop things here
-                self.voice_command_obj.current_state = "free"
+                self.cleanup()
                 return
-            rospy.sleep(1)
+            else:
+                self.voice_command_obj.cmd_vel_pub.publish(self.voice_command_obj.cmd_vel)
+                r.sleep()
         
         self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
-        self.voice_command_obj.current_state = "free"
-    def action_turn(self,direction):
-        pass 
-    def action_goto(self,destination):
-        pass
-    def action_spin(self,duration):
-        pass
+        self.cleanup()
 
+    def action_turn(self,direction):
+        self.voice_command_obj.say(["ok, sir, preparing to turn " + direction,"command received, turning "+ direction])
+        self.voice_command_obj.current_state = "busy"
+        self.voice_command_obj.busy_task = "turning "+ direction
+       
+        # assign empty cmd
+        self.voice_command_obj.cmd_vel = Twist()
+        if direction == "left":
+            self.voice_command_obj.cmd_vel.angular.z = 0.5
+        if direction == "right":
+            self.voice_command_obj.cmd_vel.angular.z = -0.5
+
+        self.voice_command_obj.say(["moving " + direction + " for thirty second"])
+        r = rospy.Rate(5)   
+
+        for x in xrange(1,150):
+            if self.stopped():
+                self.cleanup()
+                return
+            else:
+                self.voice_command_obj.cmd_vel_pub.publish(self.voice_command_obj.cmd_vel)
+                r.sleep()
+
+    def action_goto(self,destination):
+        self.voice_command_obj.say(["sorry, sir, this method is not implemented yet, going back to free state"])
+        self.cleanup()
+
+    def action_spin(self,duration):
+        self.voice_command_obj.say(["sorry, sir, this method is not implemented yet, going back to free state"])
+        self.cleanup()
         
 
 
@@ -135,8 +175,6 @@ class Demo_voice_command:
         self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle'],
                                     'forward':['move forward','go forward'],
                                     'backward':['move backward','go backward'],
-                                    'move left':['move left', 'step left'],
-                                    'move right':['move right', 'step right'],
                                     'turn left': ['turn left'],
                                     'turn right': ['turn right'],
                                     'spin': ['spin','spinning'],
@@ -149,11 +187,14 @@ class Demo_voice_command:
                                     'greetings':['how are you','hello turtlebot','greetings turtlebot','whats up'],
                                     
                                     # stop has been put to last priority, so that it will only recognized if it's nothing above
-                                    'stop task':['stop your task', 'stop current task']
+                                    'stop task':['stop', 'cancel']
                                     }
 
+        # publish to turtlebot's velocity teleop topic
+        self.cmd_vel_pub = rospy.Publisher("/cmd_vel_mux/input/teleop",Twist,queue_size = 10)
+        self.cmd_vel = Twist()
 
-
+        # subcribe to speech recognizer from pocketsphinx
         rospy.Subscriber('/recognizer/output',String,self.receive_speech_callback)
 
         self.say(["squirtle start listening"])
@@ -162,7 +203,7 @@ class Demo_voice_command:
         # choose randomly from giving strings to rendor diversity
         # note that strings_to_say is a LIST of string, do not forget to add []
         string_to_say = random.choice(strings_to_say)
-        delay_length = len(string_to_say)/13.5
+        delay_length = len(string_to_say)/13.0
 
         self.recognizer_stop()
         self.soundhandle.say(string_to_say, self.voice, 1.0)
@@ -205,9 +246,62 @@ class Demo_voice_command:
         elif self.current_state == "wfc":
             # state of waiting for command, accepting command in this state
             if command == "forward":
-                # TODO: check if the robot is busy
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
                 self.thread1 = Action_thread(self,"move","forward")
                 self.thread1.start()
+
+            elif command == "backward":
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
+                self.thread1 = Action_thread(self,"move","backward")
+                self.thread1.start()
+
+            elif command == "turn left":
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
+                self.thread1 = Action_thread(self,"turn","left")
+                self.thread1.start()
+
+            elif command == "turn right":
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
+                self.thread1 = Action_thread(self,"turn","right")
+                self.thread1.start()
+
+            elif command == "spin":
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
+                self.thread1 = Action_thread(self,"spin","forever")
+                self.thread1.start()
+
+            elif command == "go to task":
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
+                self.thread1 = Action_thread(self,"goto","some place")
+                self.thread1.start()
+
+            elif command == "introduce":
+                self.say(['hello, everyone, my name is squirtle, from team for, this is my voice command demo, i will execute some easy tasks in this demo to show my voice architecture'])
+                self.current_state = self.last_state
 
             elif command == 'stop task':
                 try:
@@ -218,10 +312,9 @@ class Demo_voice_command:
                     self.current_state = "free"
                 except Exception, e:
                     self.say(['task do not exist, sir'])
-                    self.current_state = "free"
 
             elif command == "nothing":
-                self.say(["ok, sir, good luck","sure, i will keep standing by","Hmm, fine, call me when you need","anytime, sir","ok","as you wish"])
+                self.say(["ok, sir, good luck","sure, i will keep standing by","fine, call me when you need","any time, sir","ok, sir","as you wish"])
                 self.current_state = self.last_state
 
             elif command == 'start mimic':
