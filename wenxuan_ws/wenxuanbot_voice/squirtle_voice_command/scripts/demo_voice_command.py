@@ -34,6 +34,69 @@ from sound_play.libsoundplay import SoundClient
 from std_msgs.msg import String
 import std_srvs.srv
 import random
+import thread
+import threading
+from demo_voice_command import *
+
+class Action_thread(threading.Thread):
+    """this class is for multi-threading an action task"""
+
+    def __init__(self, voice_command_obj,action_type,action_arg):
+        super(Action_thread, self).__init__()
+        self.voice_command_obj = voice_command_obj
+        self.action_type = action_type
+        self.action_arg = action_arg
+
+        # stop sign for ending a thread
+        self._stop = threading.Event()
+
+    def run(self):
+        if self.action_type == "move":
+            self.action_move(self.action_arg)
+
+        elif self.action_type == "turn":
+            self.action_turn(self.action_arg)
+
+        elif self.action_type == "spin":
+            self.action_spin(self.action_arg)
+
+        elif self.action_type == "goto":
+            self.action_goto(self.action_arg)
+
+    def stop(self):
+        # publish empty twist to stop it
+        # set the _stop, to indicate stop, need to check the _stop state during running
+        self._stop.set()
+        self.voice_command_obj.say(["action stopped","current task canceled"])
+
+        
+    def stopped(self):
+        return self._stop.isSet()
+
+    def action_move(self,direction):
+        self.voice_command_obj.say(["ok, sir, preparing to move " + direction,"command received, going "+ direction])
+        self.voice_command_obj.current_state = "busy"
+        self.voice_command_obj.busy_task = "moving "+ direction
+        # TODO: add checking _stop sign and execute action here, if stopped set the current state to free
+        for x in xrange(1,30):
+            if self.stopped():
+                #TODO: stop things here
+                self.voice_command_obj.current_state = "free"
+                return
+            rospy.sleep(1)
+        
+        self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
+        self.voice_command_obj.current_state = "free"
+    def action_turn(self,direction):
+        pass 
+    def action_goto(self,destination):
+        pass
+    def action_spin(self,duration):
+        pass
+
+        
+
+
 
 class Demo_voice_command:
     """This script is for demo of voice command of Team4 squirtle"""
@@ -73,13 +136,16 @@ class Demo_voice_command:
                                     'turn left': ['turn left'],
                                     'turn right': ['turn right'],
                                     'spin': ['spin','spinning'],
-                                    'start mimic': ['start mimic','begin mimic'],
-                                    'stop mimic': ['stop mimic'],
+                                    'start mimic': ['start mimic','begin mimic','enter mimic'],
+                                    'stop mimic': ['stop mimic','exit mimic'],
                                     'go to task': ['go to'],
                                     'introduce': ['introduce yourself'],
-                                    'report state': ['are you busy','doing anything','what are you doing']
-                                    'nothing':['nothing','no thanks','dismiss']
-                                    'greetings':['how are you','hello turtlebot','greetings turtlebot','whats up']
+                                    'report state': ['are you busy','doing anything','what are you doing'],
+                                    'nothing':['nothing','no thanks','dismiss'],
+                                    'greetings':['how are you','hello turtlebot','greetings turtlebot','whats up'],
+                                    
+                                    # stop has been put to last priority, so that it will only recognized if it's nothing above
+                                    'stop task':['stop']
                                     }
 
 
@@ -118,7 +184,7 @@ class Demo_voice_command:
             # free state
             if command == "summoning":
                 # only summoning can activate turtlebot in this state
-                self.say(["yes, sir, i'm waiting for your command","waiting for command","yes, sir","what's your call, sir","I'm here sir", "ok, give me a task"])
+                self.say(["yes, sir, i'm waiting for your command","squirtle, standing by","waiting for command","yes, sir","what's your call, sir","I'm here sir", "ok, give me a task"])
                 self.current_state = "wfc"
                 self.last_state = "free"
 
@@ -127,7 +193,7 @@ class Demo_voice_command:
             # busy state
             if command == "summoning":
                 # only summoning can activate turtlebot in this state
-                self.say(["yes, sir, i'm busy now, what's your command"])
+                self.say(["yes, sir, i'm doing " + self.busy_task + ", what's your command"])
                 self.current_state = "wfc"
                 self.last_state = "busy"
 
@@ -135,16 +201,26 @@ class Demo_voice_command:
         elif self.current_state == "wfc":
             # state of waiting for command, accepting command in this state
             if command == "forward":
-                self.say(["ok, sir, preparing to move forward","command received, going forward"])
-                self.say(["action complete, sir, return to free state"])
-                self.current_state = "free"
+                # TODO: check if the robot is busy
+                self.thread1 = Action_thread(self,"move","forward")
+                self.thread1.start()
+
+            elif command == 'stop task':
+                try:
+                    self.thread1.stop()
+                except Exception, e:
+                    self.say(['task do not exist, sir'])
+
+            elif command == "nothing":
+                self.say(["ok, sir, good luck","sure, i will keep standing by","Hmm, fine, call me when you need","anytime, sir","ok","as you wish"])
+                self.current_state = self.last_state
 
             elif command == 'start mimic':
                 self.say(["yes, sir, entering debugging mode, i will repeat what you say"])                
                 self.say(["note that i will only say what i think i hear, sir"])
                 self.current_state = "mimic"
             else:
-                self.say(["sorry, i can't recognize your command","no command received","I can't hear you sir"])
+                self.say(["sorry, i can't recognize your command","no command received","I can't hear you sir","back to previous state","i can't recognize","I'm not sure, sir","negative"])
                 self.current_state = self.last_state
 
         elif self.current_state == "mimic":
@@ -158,7 +234,6 @@ class Demo_voice_command:
 
         else:
             self.say(["sir, my state is encountering an error, please check your code"])
-
 
 
     def parse_command(self,input_phrase,match_method):
@@ -196,3 +271,6 @@ if __name__=="__main__":
         rospy.spin()
     except rospy.ROSInterruptException:
         rospy.loginfo("Voice command finished")
+
+
+
