@@ -33,6 +33,7 @@ import rospy
 from sound_play.libsoundplay import SoundClient
 from std_msgs.msg import String
 import std_srvs.srv
+import random
 
 class Demo_voice_command:
     """This script is for demo of voice command of Team4 squirtle"""
@@ -55,7 +56,7 @@ class Demo_voice_command:
         self.recognizer_start = rospy.ServiceProxy('/recognizer/start', std_srvs.srv.Empty)
         rospy.sleep(3)
 
-        self.say("Voice initial lize complete")
+        self.say(["Voice initial lize complete"])
         self.soundhandle.stopAll()
 
 
@@ -77,16 +78,21 @@ class Demo_voice_command:
                                     'go to task': ['go to'],
                                     'introduce': ['introduce yourself'],
                                     'report state': ['are you busy','doing anything','what are you doing']
+                                    'nothing':['nothing','no thanks','dismiss']
+                                    'greetings':['how are you','hello turtlebot','greetings turtlebot','whats up']
                                     }
 
 
 
         rospy.Subscriber('/recognizer/output',String,self.receive_speech_callback)
 
-        self.say("squirtle start listening")
+        self.say(["squirtle start listening"])
 
-    def say(self, string_to_say):
-        delay_length = len(string_to_say)/13.0
+    def say(self, strings_to_say):
+        # choose randomly from giving strings to rendor diversity
+        # note that strings_to_say is a LIST of string, do not forget to add []
+        string_to_say = random.choice(strings_to_say)
+        delay_length = len(string_to_say)/14.0
 
         self.recognizer_stop()
         self.soundhandle.say(string_to_say, self.voice, 1.0)
@@ -100,7 +106,8 @@ class Demo_voice_command:
 
         rospy.loginfo(msg.data)
         command = self.parse_command(msg.data,"contain")
-        
+
+        # enter finite state machine state switcher
         self.state_switcher(msg,command)
 
 
@@ -111,7 +118,7 @@ class Demo_voice_command:
             # free state
             if command == "summoning":
                 # only summoning can activate turtlebot in this state
-                self.say("yes, sir, i'm waiting for your command")
+                self.say(["yes, sir, i'm waiting for your command","waiting for command","yes, sir","what's your call, sir","I'm here sir", "ok, give me a task"])
                 self.current_state = "wfc"
                 self.last_state = "free"
 
@@ -120,7 +127,7 @@ class Demo_voice_command:
             # busy state
             if command == "summoning":
                 # only summoning can activate turtlebot in this state
-                self.say("yes, sir, i'm busy now, what's your command")
+                self.say(["yes, sir, i'm busy now, what's your command"])
                 self.current_state = "wfc"
                 self.last_state = "busy"
 
@@ -128,29 +135,29 @@ class Demo_voice_command:
         elif self.current_state == "wfc":
             # state of waiting for command, accepting command in this state
             if command == "forward":
-                self.say("ok, sir, preparing to move forward")
-                self.say("action complete, sir, return to free state")
+                self.say(["ok, sir, preparing to move forward","command received, going forward"])
+                self.say(["action complete, sir, return to free state"])
                 self.current_state = "free"
 
             elif command == 'start mimic':
-                self.say("yes, sir, entering debugging mode, i will repeat what you say")                
-                self.say("note that i will only say what i think i hear, sir")
+                self.say(["yes, sir, entering debugging mode, i will repeat what you say"])                
+                self.say(["note that i will only say what i think i hear, sir"])
                 self.current_state = "mimic"
             else:
-                self.say("sorry, i can't recognize your command")
+                self.say(["sorry, i can't recognize your command","no command received","I can't hear you sir"])
                 self.current_state = self.last_state
 
         elif self.current_state == "mimic":
             # mimic state for debugging voice, will repeat what it hear
             if command == "stop mimic":
-                self.say("yes, sir, exiting mimic state, now i'm at free state")
+                self.say(["yes, sir, exiting mimic state, now i'm at free state"])
                 self.current_state = "free"
             else:
-                self.say(msg.data)
+                self.say([msg.data])
 
 
         else:
-            self.say("sir, my state is encountering an error, please check your code")
+            self.say(["sir, my state is encountering an error, please check your code"])
 
 
 
