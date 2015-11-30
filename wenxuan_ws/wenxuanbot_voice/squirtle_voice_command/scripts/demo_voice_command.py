@@ -329,11 +329,11 @@ class Demo_voice_command:
 
         elif self.current_state == "mimic":
             # mimic state for debugging voice, will repeat what it hear
-            if command == "stop mimic" or command == "stop":
+            if command == "stop mimic" or command == "stop task":
                 self.say(["yes, sir, exiting mimic state, now i'm at free state"])
                 self.current_state = "free"
             else:
-                self.say([msg.data])
+                self.say(["you are saying "+msg.data])
 
 
         else:
