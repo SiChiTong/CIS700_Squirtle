@@ -41,9 +41,9 @@ class Demo_voice_command:
         rospy.on_shutdown(self.cleanup)
 
         #create soundhandle for sound playing
-        self.voice = 'voice_kal_diphone'
+        #self.voice = 'voice_kal_diphone'
         #self.voice = 'voice_cmu_us_clb_arctic_clunits'
-        #self.voice = 'voice_cmu_us_slt_arctic_clunits'
+        self.voice = 'voice_cmu_us_slt_arctic_clunits'
         #self.voice = 'voice_cmu_us_rms_arctic_clunits'
         self.soundhandle = SoundClient()
         rospy.sleep(1)
@@ -65,7 +65,11 @@ class Demo_voice_command:
                                     'move right':['move right', 'step right'],
                                     'turn left': ['turn left'],
                                     'turn right': ['turn right'],
-                                    'spin': ['spin']}
+                                    'spin': ['spin'],
+                                    'start mimic': ['start mimic','begin mimic'],
+                                    'stop mimic': ['stop mimic'],
+                                    'check busy': ['are you busy','doing anything']
+                                    }
 
 
 
@@ -76,12 +80,62 @@ class Demo_voice_command:
     def receive_speech_callback(self,msg):
         # print what it recognized
         rospy.loginfo(msg.data)
-        command = self.parse_command(msg.data,"exact")
+        command = self.parse_command(msg.data,"contain")
 
-        # speak what it recognized
-        self.soundhandle.say("You are commanding "+ command,self.voice)
-        rospy.sleep(3)
 
+        if self.current_state == "free":
+            # free state
+            if command == "summoning":
+                # only summoning can activate turtlebot in this state
+                self.soundhandle.say("yes, sir, i'm waiting for your command",self.voice)
+                rospy.sleep(4)
+                self.current_state = "wfc"
+                self.last_state = "free"
+
+        elif self.current_state == "busy":
+            # busy state
+            if command == "summoning":
+                # only summoning can activate turtlebot in this state
+                self.soundhandle.say("yes, sir, i'm busy now, what's your command",self.voice)
+                rospy.sleep(5)
+                self.current_state = "wfc"
+                self.last_state = "busy"
+
+
+        elif self.current_state == "wfc":
+            # state of waiting for command, accepting command in this state
+            if command == "forward":
+                self.soundhandle.say("ok, sir, preparing to move forward",self.voice)
+                rospy.sleep(4)
+                self.soundhandle.say("action complete, sir, return to free state",self.voice)
+                rospy.sleep(4)
+                self.current_state = "free"
+            elif command == 'start mimic':
+                self.soundhandle.say("yes, sir, entering debugging mode, i will repeat what you say",self.voice)
+                rospy.sleep(5)
+                self.soundhandle.say("note that i will only say what i think i hear, sir",self.voice)
+                rospy.sleep(4)
+                self.current_state = "mimic"
+            else:
+                self.soundhandle.say("sorry, i can't recognize any command", self.voice)
+                rospy.sleep(3)
+                self.current_state = self.last_state
+
+        elif self.current_state == "mimic":
+            # mimic state for debugging voice, will repeat what it hear
+            if command == "stop mimic":
+                self.soundhandle.say("yes, sir, exiting mimic state, now i'm at free state",self.voice)
+                rospy.sleep(3)
+                self.current_state = "free"
+            else:
+                self.soundhandle.say(msg.data,self.voice)
+                rospy.sleep(3)
+
+
+        else:
+            self.soundhandle.say("sir, my state is encountering an error, please check your code",self.voice)
+            rospy.sleep(4)
+          
 
 
 
@@ -107,7 +161,8 @@ class Demo_voice_command:
                     if input_phrase.find(word) > -1:
                         return command
         else:
-            print "Invalid matching method"
+            self.soundhandle.say("sir, command parser is encountering error, invalid matching method",self.voice)
+            rospy.sleep(4)
             return "error"
 
         return "no command"
