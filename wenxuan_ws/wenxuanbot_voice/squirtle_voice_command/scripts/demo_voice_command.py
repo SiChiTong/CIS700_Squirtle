@@ -6,7 +6,7 @@
 #              if it was assigned new task it will ask if it should cancel current one
 # 2. Free   -- means the robot is not doing anything
 #              when free it can response(only) to summoning phrase and flip state to "wait for command"         
-# 3. Wait for command
+# 3. Wait for command (wfc)
 #           -- means the robot is summoned, it will listen for command
 #              when wait for command, if the command is not recognizable
 #              state will return back to previous state(busy or free)  
@@ -41,29 +41,76 @@ class Demo_voice_command:
         rospy.on_shutdown(self.cleanup)
 
         #create soundhandle for sound playing
+        self.voice = 'voice_kal_diphone'
+        #self.voice = 'voice_cmu_us_clb_arctic_clunits'
+        #self.voice = 'voice_cmu_us_slt_arctic_clunits'
+        #self.voice = 'voice_cmu_us_rms_arctic_clunits'
         self.soundhandle = SoundClient()
         rospy.sleep(1)
 
-        #self.voice = 'voice_kal_diphone'
-        #self.voice = 'voice_cmu_us_clb_arctic_clunits'
-        self.voice = 'voice_cmu_us_slt_arctic_clunits'
-        #self.voice = 'voice_cmu_us_rms_arctic_clunits'
 
-        self.soundhandle.say("Hello world", self.voice, 1.0)
-        rospy.sleep(2)
+        self.soundhandle.say("Voice initialize complete", self.voice, 1.0)
+        rospy.sleep(3)
         self.soundhandle.stopAll()
 
- 
-        rospy.Subscriber('/recognizer/output',String,self.receive_speech_callback)
 
+        self.current_state = "free"
+        self.last_state = "free"
+
+        # dictionary indicating phrases to command map
+        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle'],
+                                    'forward':['move forward','go forward'],
+                                    'backward':['move backward','go backward'],
+                                    'move left':['move left', 'step left'],
+                                    'move right':['move right', 'step right'],
+                                    'turn left': ['turn left'],
+                                    'turn right': ['turn right'],
+                                    'spin': ['spin']}
+
+
+
+
+
+        rospy.Subscriber('/recognizer/output',String,self.receive_speech_callback)
 
     def receive_speech_callback(self,msg):
         # print what it recognized
         rospy.loginfo(msg.data)
-        
+        command = self.parse_command(msg.data,"exact")
+
         # speak what it recognized
-        self.soundhandle.say(msg.data,self.voice)
+        self.soundhandle.say("You are commanding "+ command,self.voice)
         rospy.sleep(3)
+
+
+
+
+
+
+
+    def parse_command(self,input_phrase,match_method):
+        # this method is to convert an input string and output a command
+        # has two method, 'exact' for matching exactly, 'contain' for containing phrases(loose) 
+        # returned command type:
+        # "error" -- indicating error
+        # "no command" -- indicating no command found
+        # other command -- check the keys of self.phrases_to_command 
+        if match_method == "exact":
+            for (command, keywords) in self.phrases_to_command.iteritems():
+                for word in keywords:
+                    if input_phrase == word:
+                        return command
+
+        elif match_method == "contain":
+            for (command, keywords) in self.phrases_to_command.iteritems():
+                for word in keywords:
+                    if input_phrase.find(word) > -1:
+                        return command
+        else:
+            print "Invalid matching method"
+            return "error"
+
+        return "no command"
 
     def cleanup(self):
         # cleanup to ensure a decent shutdown
