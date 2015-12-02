@@ -1,0 +1,31 @@
+This Package is for voice localization (not really, only orientation) of squirtle.
+
+Knowing where is the voice source could be a lot of usage when doing voice command. For example you may (or not) want the robot to recognize your voice only when it's facing you. Or, you may want the robot to face you when you are talking to it (Yeah! I'm a robot with courtesy!).
+
+The mechanism of it is by putting three microphone on the robot detecting voice volume. When the volumes is up to a threshold, it will caculate the angle of that voice source. published this angle value.
+
+Content includes:
+-- hardware:
+    Three analog microphone, placed with an angle of 0, 120, 240 at the robot.
+    Each one do not needs to be high quality(since only care about volumes).
+    Each do not needs to be exactly the same model (though recommended), since there will be calibration procedure.
+
+-- filtering: 
+    filter the voice into volume value
+
+-- Provided Service: calibration:  When called it will activate calibration procedure. 
+    -- offset calibration:
+        when in quite environment (robot will say please be quite for cali), each volume will be offset to 0.
+    -- scale calibration:
+        The robot will rotate to make each microphone towards the user (there are three), and ask the user to say something. this will update the scaling factor of each microphone.
+
+-- Publish topic:
+    -- voice_angle(with confidence): this indicate what's the voice source position relative to robot (in angle), there is a confidence with every angle to indicate how sure the robot think it's the angle.
+
+-- Dependencies: (temp)
+    sound_play package for voice feedback of the robot during calibration.
+
+
+
+
+
