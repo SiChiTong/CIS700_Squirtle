@@ -1,0 +1,23 @@
+This document is for developing ROS package: squirtle_voice_localization
+
+Prospective finishing time: 2015/12/9 (demo day)
+
+
+1. Figure out how to integrate arduino into ROS
+
+2. Microphone output testing.
+
+3. Microphone filter tuning.
+
+4. Microphone raw voice localization output.
+
+5. Microphone calibration development.
+
+6. Microphone calibrated voice localization testing.
+
+7. Integration with ROS.
+
+8. Integration testing.
+ 
+
+

@@ -9,6 +9,12 @@ Content includes:
     Three analog microphone, placed with an angle of 0, 120, 240 at the robot.
     Each one do not needs to be high quality(since only care about volumes).
     Each do not needs to be exactly the same model (though recommended), since there will be calibration procedure.
+    We are using:
+    "
+    (Adafruit) Electret Microphone Amplifier - MAX4466 with Adjustable Gain[ID:1063]
+    "
+    Website: https://www.adafruit.com/products/1063
+    And a arduino UNO
 
 -- filtering: 
     filter the voice into volume value
