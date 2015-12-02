@@ -13,19 +13,19 @@
 # 4. mimic  -- means the robot is in mimic state which is a debugging state
 #              in this state it will say anything it hears
 #              terminate if it hears mimic mode termination phrase
-#
-#
+
+
 # For voice command it has four different levels of recognition (from loose to strict)
 # 1. Contains -- will recognize if the desired phrases is contained in input phrase
 # 2. Exact    -- Will recognize only if the input phrase is exactly the same as desired one
 # 3. Ask for confirmation
 #             -- will ask for confirmation once recognized, for safety
 # 4. Refuse   -- refuse such command and give a reason
-# 
+
 #
 # Use multi thread to open up a action, track its state, once finished flip the state from busy to free
 #
-# TODO: upload a finite-state-machine graph to illustrate
+# 
 
 import sys
 import rospy

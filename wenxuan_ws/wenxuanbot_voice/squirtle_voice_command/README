@@ -1,3 +1,29 @@
 This package is for voice command in squirtle.
 
 Has dependency pocketsphinx(for recognition) and sound_play(for voice synthesis) package.
+
+Here is document of Demo_voice_command node
+
+THis node as a whole is a Finite-State-Machine with states listed below
+1. Busy   -- means the robot is currently busy at other task
+             when busy, it can response(only) to summoning phrase and flip state to "wait for command"
+             if it was assigned new task it will ask if it should cancel current one
+2. Free   -- means the robot is not doing anything
+             when free it can response(only) to summoning phrase and flip state to "wait for command"         
+3. Wait for command (wfc)
+          -- means the robot is summoned, it will listen for command
+             when wait for command, if the command is not recognizable
+             state will return back to previous state(busy or free)  
+4. mimic  -- means the robot is in mimic state which is a debugging state
+             in this state it will say anything it hears
+             terminate if it hears mimic mode termination phrase
+
+
+For voice command it has four different levels of recognition (from loose to strict)
+1. Contains -- will recognize if the desired phrases is contained in input phrase
+2. Exact    -- Will recognize only if the input phrase is exactly the same as desired one
+3. Ask for confirmation
+            -- will ask for confirmation once recognized, for safety
+4. Refuse   -- refuse such command and give a reason 
+
+A state transfer graph is also provided in this folder.
