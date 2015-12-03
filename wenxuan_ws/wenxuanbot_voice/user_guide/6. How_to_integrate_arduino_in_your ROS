@@ -1,0 +1,40 @@
+This tutorial will guide you how to use arduino with your ROS application by construct a "hello world" function
+The voice localization is using arduino to collect sound.
+
+Mechanism:
+    The main idea is that the arduino serves as a ros node, it can publish, subscribe just like other nodes. It connects with computer using USB, and the package rosserial will forward the serial data from arduino to your ROS.
+
+Here are steps:
+    
+    1. Install rosserial package
+        $ sudo apt-get install ros-indigo-rosserial-arduino
+        $ sudo apt-get install ros-indigo-rosserial
+
+    2. Install arduino IDE on website: https://www.arduino.cc/en/Main/Software.
+        For the linux version it gives you a zip file, unzip it, put it on your ~/Desktop (or somewhere else). And it should work out of the box by executing:
+        $ cd <dir of your arduino folder>
+        $ ./arduino 
+
+    3. Set arduino library to include ros_lib.
+        Arduino is using a concept "sketchbook" to store your libraries and code. And it need to include ros libraries to write ros compatible code.
+        First, set file->preferences->sketchbook location to put the sketchbook anywhere you like (I just put it on my ~/Desktop).
+        Second, cd into your sketchbook/libraries, then :
+            $ rosrun rosserial_arduino make_libraries.py .
+        This should copy the libraries ros_lib into the sketchbook
+        Finally, openup arduino IDE, goto file->examples if you see "ros_lib" listed, it means you succeed!
+
+    4. Hello World program (loved by everbody):
+        1. Open the file->example->ros_lib->hello world, that's the code you will upload to arduino.
+        2. Plug-in your arduino, check its port (mine is at /dev/ttyACM0), you may need to open its permission by: (or you may failed to upload)
+            $ chmod 777 /dev/ttyACM0
+        3. Set the port in IDE, and upload!
+        4. run :
+            $ roscore
+            $ rosrun rosserial_python serial_node.py /dev/ttyACM0 (the forwarding node)
+        NOW look into topic "chatter" you can see the hello world!!!! (excited, isn't it!?)
+        
+
+
+
+
+
