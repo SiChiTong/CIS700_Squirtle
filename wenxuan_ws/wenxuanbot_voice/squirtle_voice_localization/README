@@ -16,20 +16,28 @@ Content includes:
     Website: https://www.adafruit.com/products/1063
     And a arduino UNO
 
--- filtering: 
-    filter the voice into volume value
+-- "mic_array_collector" node: (on Arduino)
+    collect and publish low-level filtered sound data of 3 mic on topic "mic_strengths". 
 
--- Provided Service: calibration:  When called it will activate calibration procedure. 
-    -- offset calibration:
-        when in quite environment (robot will say please be quite for cali), each volume will be offset to 0.
-    -- scale calibration:
-        The robot will rotate to make each microphone towards the user (there are three), and ask the user to say something. this will update the scaling factor of each microphone.
+-- "angle_estimator" node: (on PC)
+    -- introduction: This node is for collecting microphone strength data(from arduino)
+        and estimate angle relative to robots heading direction. 
+   
+    -- sub: topic "mic_strengths" which is published by Arduino
+   
+    -- pub: topic "voice_source_angle", which indicate the angle of the voice source
+        with confidence(confidence is to indicate how sure the robot think it's the angle.).
+   
+    -- param: "~offsets_x" "~offsets_y" "~offsets_z"  "~scale_x" "~scale_y" "~scale_z"
+   
+    -- service: "calibration_start", activate calibration mode, which has:
+        -- offset calibration:
+            when in quite environment (robot will say please be quite for cali), each sound strength will be offsetted to around 0. then it will set its param "~offsets_x" "~offsets_y" "~offsets_z" accordingly.
+         -- scale calibration:
+             The robot will rotate to make each microphone towards the user (there are three), and ask the user to say something. this will update the scaling factor of each microphone. then it will set its param  "~scale_x" "~scale_y" "~scale_z"
 
--- Publish topic:
-    -- voice_angle(with confidence): this indicate what's the voice source position relative to robot (in angle), there is a confidence with every angle to indicate how sure the robot think it's the angle.
+    -- depend: sound_play, pocketsphinx (for calibration procedure)
 
--- Dependencies: (temp)
-    sound_play package for voice feedback of the robot during calibration.
 
 
 
