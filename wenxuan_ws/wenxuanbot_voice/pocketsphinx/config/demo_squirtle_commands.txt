@@ -1,3 +1,6 @@
+hello
+yes
+no
 turtlebot
 squirtle
 introduce yourself
@@ -7,19 +10,25 @@ move forward
 move backward
 turn left
 turn right
-spin fast
-speed up
-speed down
-faster
-slower
+spin 
+spinning
 power shut down 
 begin exploration
 cancel exploration
 mute
-mimic my voice
+begin mimic
+start mimic
+enter mimic
 stop mimic
-go to my left
-go to my right
-go to the back
-
-
+go to charity's office
+are you busy
+doing anything
+what are you doing
+nothing
+no thanks
+dismiss
+how are you 
+greetings turtlebot
+whats up
+stop your task
+stop current task

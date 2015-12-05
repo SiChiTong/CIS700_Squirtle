@@ -1,0 +1,45 @@
+This Package is for voice localization (not really, only orientation) of squirtle.
+
+Knowing where is the voice source could be a lot of usage when doing voice command. For example you may (or not) want the robot to recognize your voice only when it's facing you. Or, you may want the robot to face you when you are talking to it (Yeah! I'm a robot with courtesy!).
+
+The mechanism of it is by putting three microphone on the robot detecting voice volume. When the volumes is up to a threshold, it will caculate the angle of that voice source. published this angle value.
+
+Content includes:
+-- hardware:
+    Three analog microphone, placed with an angle of 0, 120, 240 at the robot.
+    Each one do not needs to be high quality(since only care about volumes).
+    Each do not needs to be exactly the same model (though recommended), since there will be calibration procedure.
+    We are using:
+    "
+    (Adafruit) Electret Microphone Amplifier - MAX4466 with Adjustable Gain[ID:1063]
+    "
+    Website: https://www.adafruit.com/products/1063
+    And a arduino UNO
+
+-- "mic_array_collector" node: (on Arduino)
+    collect and publish low-level filtered sound data of 3 mic on topic "mic_strengths". 
+
+-- "angle_estimator" node: (on PC)
+    -- introduction: This node is for collecting microphone strength data(from arduino)
+        and estimate angle relative to robots heading direction. 
+   
+    -- sub: topic "mic_strengths" which is published by Arduino
+   
+    -- pub: topic "voice_source_angle", which indicate the angle of the voice source
+        with confidence(confidence is to indicate how sure the robot think it's the angle.).
+   
+    -- param: "~offsets_x" "~offsets_y" "~offsets_z"  "~scale_x" "~scale_y" "~scale_z"
+   
+    -- service: "calibration_start", activate calibration mode, which has:
+        -- offset calibration:
+            when in quite environment (robot will say please be quite for cali), each sound strength will be offsetted to around 0. then it will set its param "~offsets_x" "~offsets_y" "~offsets_z" accordingly.
+         -- scale calibration:
+             The robot will rotate to make each microphone towards the user (there are three), and ask the user to say something. this will update the scaling factor of each microphone. then it will set its param  "~scale_x" "~scale_y" "~scale_z"
+
+    -- depend: sound_play, pocketsphinx (for calibration procedure)
+
+
+
+
+
+

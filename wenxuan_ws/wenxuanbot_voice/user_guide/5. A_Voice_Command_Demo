@@ -1,0 +1,22 @@
+This is a tutorial of how to use the demo code in package squirtle_voice_command
+
+this demo is basically showing the architecture and how it accept commands execute tasks.
+You can command it: go forward backward(just to represent short task), turn left right(just to present longer task and how it handles task when busy).
+
+Implementation of navigation tasks or other hard tasks can also be integrated in this code, it only needs to 
+    1. Have a handle to start the task. (e.g. a move_base client to set the goal)
+    2. Have a indication of finish. (e.g. or something to wait for finishing,like ac.waitForResult())
+    --> just put them inside the Action_thread class in the demo file like: start->wait->finish->return as it's a thread
+
+Here are steps of execute the demo:
+
+1. Plug-in your microphone, and set it to input!
+
+2. Enter command line: 
+    $ roslaunch squirtle_voice_command demo_squirtle_command.launch
+
+3. When you hear robot saying "sound initialize complete", it means it's ready to go!
+    Use command "squirtle" or "turtlebot" to activate it first, and something like "go forward" to command it, for details you can check the state switcher in the file demo_voice_command.py.
+
+NOTE: this demo has dependencies on pocketsphinx and sound_play package, it also uses an additional voice pack called "cmu_us_rms_arctic", if you did not installed that you can either: comment and uncomment out corresponding lines of using voice, install the voice pack by following tutorial 3
+

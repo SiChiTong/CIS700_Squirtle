@@ -1,0 +1,7 @@
+This package is for implementing a person follower using voice. 
+
+The feature we are trying to accomplish is that, when a person call the robot, it will find you and come to your place.
+
+Has dependency on voice localization and LIDAR reading.
+
+
