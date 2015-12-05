@@ -4,20 +4,20 @@ Prospective finishing time: 2015/12/9 (demo day)
 
 
 1. Figure out how to integrate arduino into ROS
-
+    DONE
 2. Microphone output testing.
-
-3. Microphone filter tuning.
-
-4. Microphone raw voice localization output.
+    DONE
+3. Microphone filter tentative testing.
+    DONE
+4. ROS Arduino communication framework development.
 
 5. Microphone calibration development.
 
-6. Microphone calibrated voice localization testing.
+6. Microphone calibrated voice localization development.
 
-7. Integration with ROS.
+8. Integration with ROS.
 
-8. Integration testing.
+9. Integration testing.
  
 
 

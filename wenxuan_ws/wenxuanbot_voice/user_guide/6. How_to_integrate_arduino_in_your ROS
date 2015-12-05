@@ -13,7 +13,7 @@ Here are steps:
     2. Install arduino IDE on website: https://www.arduino.cc/en/Main/Software.
         For the linux version it gives you a zip file, unzip it, put it on your ~/Desktop (or somewhere else). And it should work out of the box by executing:
         $ cd <dir of your arduino folder>
-        $ ./arduino 
+        $ sudo ./arduino  (sudo may needed since accessing port in /dev/)
 
     3. Set arduino library to include ros_lib.
         Arduino is using a concept "sketchbook" to store your libraries and code. And it need to include ros libraries to write ros compatible code.
@@ -26,7 +26,7 @@ Here are steps:
     4. Hello World program (loved by everbody):
         1. Open the file->example->ros_lib->hello world, that's the code you will upload to arduino.
         2. Plug-in your arduino, check its port (mine is at /dev/ttyACM0), you may need to open its permission by: (or you may failed to upload)
-            $ chmod 777 /dev/ttyACM0
+            $ chmod 777 /dev/ttyACM0 
         3. Set the port in IDE, and upload!
         4. run :
             $ roscore
