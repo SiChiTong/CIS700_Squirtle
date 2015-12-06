@@ -22,7 +22,7 @@ double offset_mic_z;
 ///////////Parameter Setup/////////////////////
 const float FILTER_THIS = 0.1;  //Low-pass Filter Param
 const float FILTER_LAST = 0.9;  //Low-pass Filter Param
-const int interval_pub_ms = 500; //set the default publish period in ms
+const int interval_pub_ms = 200; //set the default publish period in ms
 
 //////////////////////////////////////////////
 
