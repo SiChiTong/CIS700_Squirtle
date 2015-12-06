@@ -1,0 +1,30 @@
+arduino mic collector is a arduino device collect microphone "strength" of three microphones
+This tutorial will show you how to bring it up with ROS
+
+
+
+1. Setup arduino IDE as introduced before. 
+    Also, check the port your Arduino connects. (mine is /dev/ttyACM0)
+
+2. Burn "mic_array_collector.ino" into your Arduino
+    in "mic_array_collector.ino" you may want to set several parameters:
+        PORT_MIC_X,PORT_MIC_Y,PORT_MIC_Z, by default they are A0 A1 A2
+        FILTER_THIS, FILTER_LAST, by default 0.1 0.9 (good enough)
+        interval_pub_ms, by default 500, it means it publishes data to ROS every 500ms
+
+3. Launch it! 
+    $ roslaunch squirtle_voice_localization arduino_collector_bringup.launch port:="/dev/ttyACM0"
+    And it will start publishing data!!!! 
+
+
+
+Publishes:
+    Topic "/arduino_collector/mic_array_strength" ("~mic_array_strength")
+        which has type "geometry_msgs/Vector3" (we did not use stamped msg due to memory limitations)
+            Vector3.x is microphone x strength value
+            Vector3.y is microphone y strength value
+            Vector3.z is microphone z strength value
+
+
+
+    
