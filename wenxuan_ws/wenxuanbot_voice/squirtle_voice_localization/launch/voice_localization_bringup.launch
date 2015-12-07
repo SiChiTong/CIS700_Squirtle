@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="port_arduino" default="/dev/ttyACM0" />
+    <arg name="baud_arduino" default="57600" />
+
+    <include file="$(find squirtle_voice_localization)/launch/arduino_collector_bringup.launch">
+        <!-- pass the arguments to inner launch file -->
+        <arg name="port" value="$(arg port_arduino)" />
+        <arg name="baud" value="$(arg baud_arduino)" />
+    </include >   
+
+    
+    <node pkg="squirtle_voice_localization" type="direction_estimator.py" name="direction_estimator" output="screen">
+    <!-- specify parameters here  -->
+
+
+    </node>
+
+
+</launch>
