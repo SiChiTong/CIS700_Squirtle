@@ -16,6 +16,7 @@ from collections import deque #queue for buffering mic data
 from numpy import argmax
 
 
+
 class Direction_estimator:
     """This class to for estimating voice angle using microphone array strength"""
     def __init__(self):
@@ -111,8 +112,8 @@ class Direction_estimator:
         msg_pub.score = self.score
         
         # log to debug
-        rospy.loginfo('Angle: ' + str(self.est_angle))
-        rospy.loginfo('Score: ' + str(self.score))
+        #rospy.loginfo('Angle: ' + str(self.est_angle))
+        #rospy.loginfo('Score: ' + str(self.score))
 
     def direction_score_provider(self,req):
         # service call back 
@@ -134,10 +135,51 @@ class Direction_estimator:
         return norm_angle
 
     def calibration_process(self,req):
+        # calibration needs recognizer, recognizer output topic, sound_play
         rospy.loginfo("Starting Calibration Process...")
-        rospy.sleep(10)
+        say_pub = rospy.Publisher('/mouth/string_to_say', String, queue_size=10)
+        move_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', String, queue_size=10) 
+        tf_listener = tf.TransformListener()
+        
+
+        rospy.sleep(2)
+
+        say_pub.publish("Calibration initialize complete")
+
+        say_pub.publish("Begin offset calibration, Please be quite for several seconds")
+
+        say_pub.publish("Offset calibration complete, begin scale calibration")
+
+        say_pub.publish("Please stand in front of me and call me")
+
+        say_pub.publish("Thanks, please stay in position, rotating...")
+
+        say_pub.publish("OK, please call me like you did before")
+
+        say_pub.publish("Thanks, stay in position, there is one last step...")
+        
+        say_pub.publish("OK, please call me")
+
+        say_pub.publish("Scale calibration complete.")
+
+        say_pub.publish("Calibration successful, now I can know where you are.")
+
+        say_pub.publish("har har har har")
+
+
+        for i in range(2000):
+            rospy.sleep(1)
+            rospy.loginfo('Angle: ' + str(self.est_angle))
+            rospy.loginfo('Score: ' + str(self.score))
+            
+
+
+
         
         return StartCalibrationResponse()
+            
+
+
 
 
     def cleanup(self):

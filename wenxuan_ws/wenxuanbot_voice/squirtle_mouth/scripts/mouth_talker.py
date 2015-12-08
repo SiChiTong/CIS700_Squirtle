@@ -13,7 +13,7 @@ class Mouth_talker:
     def __init__(self):
         rospy.init_node('mouth_talker')
 
-        rospy.Subscriber("string_to_say", String, self.callback)
+        rospy.Subscriber("string_to_say", String, self.callback,queue_size = 20)
         #create soundhandle for sound playing
         self.soundhandle = SoundClient()
         rospy.sleep(1)  
@@ -27,21 +27,24 @@ class Mouth_talker:
         # recognizer service, note that the recognizer may not exist
         self.recognizer_stop = rospy.ServiceProxy('/recognizer/stop', std_srvs.srv.Empty)
         self.recognizer_start = rospy.ServiceProxy('/recognizer/start', std_srvs.srv.Empty)
-
         
+        self.say("mouth on line.")
 
     def callback(self,msg):
         rospy.loginfo(rospy.get_caller_id() + ": I received %s", msg.data)
+        self.say(msg.data)
+        
 
-
-        delay_length = len(msg.data)/13.0
+   
+    def say(self,string_to_say):
+        delay_length = len(string_to_say)/13.0
         try:
             self.recognizer_stop()
             rospy.loginfo("recognizer stopped")
         except Exception, e:
             rospy.loginfo("no recognizer to stop")
 
-        self.soundhandle.say(msg.data, self.voice, 1.0)
+        self.soundhandle.say(string_to_say, self.voice, 1.0)
 
         rospy.sleep(delay_length)
 
@@ -49,10 +52,7 @@ class Mouth_talker:
             self.recognizer_start()
             rospy.loginfo("recognizer restarted")
         except Exception, e:
-            rospy.loginfo("no recognizer to restart")
-
-   
-                
+            rospy.loginfo("no recognizer to restart")        
 
 
 if __name__ == '__main__':
