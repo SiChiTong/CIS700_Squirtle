@@ -12,8 +12,13 @@
 
     
     <node pkg="squirtle_voice_localization" type="direction_estimator.py" name="direction_estimator" output="screen">
-    <!-- specify parameters here  -->
-
+        <!-- specify parameters here  -->
+        <param name="offset_mic_x" value="0" />
+        <param name="offset_mic_y" value="0" />
+        <param name="offset_mic_z" value="0" />
+        <param name="scale_mic_x" value="1" />
+        <param name="scale_mic_y" value="1" />
+        <param name="scale_mic_z" value="1" />
 
     </node>
 

@@ -43,6 +43,19 @@ class Direction_estimator:
         self.est_angle = 0
         self.est_score = 0
 
+        # get the parameters, should set these in launch files 
+        # also, self.<parameter> will be modified during calibration
+        # offset is with respect of each microphone reading(which implies that if you changed arduino data collection rate it will change), 
+        # and offset is always negative
+        self.offset_mic_x = rospy.get_param('~offset_mic_x', 0)
+        self.offset_mic_y = rospy.get_param('~offset_mic_y', 0)
+        self.offset_mic_z = rospy.get_param('~offset_mic_z', 0)
+        self.scale_mic_x = rospy.get_param('~scale_mic_x', 1.0)
+        self.scale_mic_y = rospy.get_param('~scale_mic_y', 1.0)
+        self.scale_mic_z = rospy.get_param('~scale_mic_z', 1.0)
+
+        
+
     def update_buffer(self,mic_x,mic_y,mic_z):
         # update self.mic_data_buffer
         # append three mic data into buffer, it will automatically delete old data to keep it at a fixed size
@@ -51,10 +64,19 @@ class Direction_estimator:
         self.mic_data_buffer_z.append(mic_z)
 
     def estimate_direction(self):
-        #estimate direction according to mic_data_buffers
-        sum_x = sum(self.mic_data_buffer_x)
-        sum_y = sum(self.mic_data_buffer_y)
-        sum_z = sum(self.mic_data_buffer_z)
+        # estimate direction according to mic_data_buffers, with calibrated parameters
+        sum_x = (sum(self.mic_data_buffer_x) + self.window_size * self.offset_mic_x) * self.scale_mic_x
+        sum_y = (sum(self.mic_data_buffer_y) + self.window_size * self.offset_mic_y) * self.scale_mic_y
+        sum_z = (sum(self.mic_data_buffer_z) + self.window_size * self.offset_mic_z) * self.scale_mic_z
+
+        # strength_sum should always be positive
+        if sum_x < 0:
+            sum_x = 0
+        if sum_y < 0:
+            sum_y = 0               
+        if sum_z < 0:
+            sum_z = 0
+
 
         if argmax([sum_x,sum_y,sum_z]) == 0:
             # sum_x is the biggest
@@ -72,7 +94,7 @@ class Direction_estimator:
             adjust_angle = ((sum_z-sum_y)-(sum_z-sum_x))/((sum_z-sum_y)+(sum_z-sum_x))*60
 
         self.est_angle = self.normalize_angle(main_angle + adjust_angle)  
-        self.score = 0
+        self.score = (max([sum_x,sum_y,sum_z]) - min([sum_x,sum_y,sum_z])) / max([sum_x,sum_y,sum_z]) 
          
         return (self.est_angle , self.score)
 
@@ -83,11 +105,14 @@ class Direction_estimator:
         self.update_buffer(msg.x, msg.y, msg.z)
         self.estimate_direction()
 
+        # for publishing
         msg_pub = DirectionScore()
         msg_pub.direction = self.est_angle
         msg_pub.score = self.score
-       
-        rospy.loginfo(self.est_angle)
+        
+        # log to debug
+        rospy.loginfo('Angle: ' + str(self.est_angle))
+        rospy.loginfo('Score: ' + str(self.score))
 
     def direction_score_provider(self,req):
         # service call back 
