@@ -36,8 +36,7 @@ stop your task
 stop current task
 come here 
 I'm here
-I am here
-goto grasp lab 
+go to grasp lab 
 Jarvis
 
 
