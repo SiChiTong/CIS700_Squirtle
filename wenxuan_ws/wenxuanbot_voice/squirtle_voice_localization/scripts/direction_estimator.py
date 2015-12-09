@@ -248,7 +248,7 @@ class Direction_estimator:
         rospy.set_param('~scale_mic_z',self.scale_mic_z)
 
         rospy.wait_for_message("/recognizer/output",String)
-        sleep(2)
+        rospy.sleep(2)
         return StartCalibrationResponse()
 
     def rotater(self,goal_voice_direction):
