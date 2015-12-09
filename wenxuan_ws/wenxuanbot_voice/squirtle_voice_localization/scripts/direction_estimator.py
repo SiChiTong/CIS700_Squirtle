@@ -15,6 +15,8 @@ from squirtle_voice_localization.srv import *
 from collections import deque #queue for buffering mic data
 from numpy import argmax
 import tf
+from tf.transformations import euler_from_quaternion
+import math
 
 class Direction_estimator:
     """This class to for estimating voice angle using microphone array strength"""
@@ -54,6 +56,11 @@ class Direction_estimator:
         self.scale_mic_y = rospy.get_param('~scale_mic_y', 1.0)
         self.scale_mic_z = rospy.get_param('~scale_mic_z', 1.0)
 
+        # publish to turtlebot's velocity teleop topic
+        self.cmd_vel_pub = rospy.Publisher("/cmd_vel_mux/input/teleop",Twist,queue_size = 10)
+        self.cmd_vel = Twist()
+
+        self.tf_listener = tf.TransformListener()
         
 
     def update_buffer(self,mic_x,mic_y,mic_z):
@@ -73,28 +80,36 @@ class Direction_estimator:
         if sum_x < 0:
             sum_x = 0
         if sum_y < 0:
-            sum_y = 0               
+            sum_y = 0              
         if sum_z < 0:
             sum_z = 0
+        rospy.loginfo('')
+        rospy.loginfo('sum_x: '+str(sum_x))
+        rospy.loginfo('sum_y: '+str(sum_y))
+        rospy.loginfo('sum_z: '+str(sum_z))
+        try:
+            if argmax([sum_x,sum_y,sum_z]) == 0:
+                # sum_x is the biggest
+                main_angle = 0
+                adjust_angle = ((sum_x-sum_z)-(sum_x-sum_y))/((sum_x-sum_z)+(sum_x-sum_y))*60
+            
+            elif argmax([sum_x,sum_y,sum_z]) == 1:
+                # sum_y is the biggest
+                main_angle = 120
+                adjust_angle = ((sum_y-sum_x)-(sum_y-sum_z))/((sum_y-sum_x)+(sum_y-sum_z))*60
 
+            elif argmax([sum_x,sum_y,sum_z]) == 2:    
+                # sum_z is the biggest
+                main_angle = 240
+                adjust_angle = ((sum_z-sum_y)-(sum_z-sum_x))/((sum_z-sum_y)+(sum_z-sum_x))*60
 
-        if argmax([sum_x,sum_y,sum_z]) == 0:
-            # sum_x is the biggest
-            main_angle = 0
-            adjust_angle = ((sum_x-sum_z)-(sum_x-sum_y))/((sum_x-sum_z)+(sum_x-sum_y))*60
-        
-        elif argmax([sum_x,sum_y,sum_z]) == 1:
-            # sum_y is the biggest
-            main_angle = 120
-            adjust_angle = ((sum_y-sum_x)-(sum_y-sum_z))/((sum_y-sum_x)+(sum_y-sum_z))*60
+            self.est_angle = self.normalize_angle(main_angle + adjust_angle)  
+            self.est_score = (max([sum_x,sum_y,sum_z]) - min([sum_x,sum_y,sum_z])) / max([sum_x,sum_y,sum_z]) 
+      
+        except Exception, e:
+            self.est_angle = 0 
+            self.est_score = 0
 
-        elif argmax([sum_x,sum_y,sum_z]) == 2:    
-            # sum_z is the biggest
-            main_angle = 240
-            adjust_angle = ((sum_z-sum_y)-(sum_z-sum_x))/((sum_z-sum_y)+(sum_z-sum_x))*60
-
-        self.est_angle = self.normalize_angle(main_angle + adjust_angle)  
-        self.est_score = (max([sum_x,sum_y,sum_z]) - min([sum_x,sum_y,sum_z])) / max([sum_x,sum_y,sum_z]) 
          
         return (self.est_angle , self.est_score)
 
@@ -133,53 +148,125 @@ class Direction_estimator:
 
         return norm_angle
 
+    def wait_for_certain_message(self,msg_str):
+        
+        received_msg = None
+        while received_msg is None or received_msg.data != msg_str:
+            try:
+                received_msg = rospy.wait_for_message("/recognizer/output",String)
+            except Exception, e:
+                received_msg = None
+        
+        
+
     def calibration_process(self,req):
         # calibration needs recognizer, recognizer output topic, sound_play
         rospy.loginfo("Starting Calibration Process...")
         say_pub = rospy.Publisher('/mouth/string_to_say', String, queue_size=10)
         move_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', String, queue_size=10) 
         tf_listener = tf.TransformListener()
-
-
         rospy.sleep(2)
 
-        say_pub.publish("Calibration initialize complete")
+        say_pub.publish("Calibration initialize complete, should we begin?")
+
+        self.wait_for_certain_message("let's begin")
+        
 
         say_pub.publish("Begin offset calibration, Please be quite for several seconds")
+        rospy.sleep(5)
+        rospy.sleep(4)
+        #self.offset_mic_x = - sum(self.mic_data_buffer_x)/self.window_size
+        #self.offset_mic_y = - sum(self.mic_data_buffer_y)/self.window_size
+        #self.offset_mic_z = - sum(self.mic_data_buffer_z)/self.window_size
+        rospy.loginfo("calibrated offset_mic_x: " + str(self.offset_mic_x));
+        rospy.loginfo("calibrated offset_mic_y: " + str(self.offset_mic_y));
+        rospy.loginfo("calibrated offset_mic_z: " + str(self.offset_mic_z));
 
-        say_pub.publish("Offset calibration complete, begin scale calibration")
+        say_pub.publish("Thanks, offset calibration complete, begin scale calibration")
 
         say_pub.publish("Please stand in front of me and call me")
-
-        #TODO: test this
-        rospy.wait_for_message("/recognizer/output")
+        
+        self.wait_for_certain_message("i'm here")
+        # doesn't really do anything except for making the person in front :)
         
         say_pub.publish("Thanks, please stay in position, rotating...")
+        # here turtlebot will rotate to let you speak to his left side
+        self.rotater(60)
 
         say_pub.publish("OK, please call me like you did before")
+        self.wait_for_certain_message("i'm here")
+        # calibrate left side mic
+        rospy.sleep(0.2)
+        self.scale_mic_x = 1.0 # constant x
+
+        sum_x = (sum(self.mic_data_buffer_x) + self.window_size * self.offset_mic_x)
+        sum_z = (sum(self.mic_data_buffer_z) + self.window_size * self.offset_mic_z)
+
+        self.scale_mic_z = float(sum_x) / float(sum_z)
+        rospy.loginfo("calibrated scale_mic_z: " + str(self.scale_mic_z));
 
         say_pub.publish("Thanks, stay in position, there is one last step...")
-        
+        self.rotater(-120)
         say_pub.publish("OK, please call me")
+        self.wait_for_certain_message("i'm here")
+        # calibrate right side mic
+        rospy.sleep(0.2)
+        self.scale_mic_x = 1.0 # constant x
+        sum_x = (sum(self.mic_data_buffer_x) + self.window_size * self.offset_mic_x)
+        sum_y = (sum(self.mic_data_buffer_y) + self.window_size * self.offset_mic_y)
+
+        self.scale_mic_y = float(sum_x) / float(sum_y)
+        rospy.loginfo("calibrated scale_mic_y: " + str(self.scale_mic_y));
+
 
         say_pub.publish("Scale calibration complete.")
-
         say_pub.publish("Calibration successful, now I can know where you are.")
-
         say_pub.publish("har har har har")
 
+        rospy.set_param('~offset_mic_x',self.offset_mic_x)
+        rospy.set_param('~offset_mic_y',self.offset_mic_y)
+        rospy.set_param('~offset_mic_z',self.offset_mic_z)
+        rospy.set_param('~scale_mic_x',self.scale_mic_x)
+        rospy.set_param('~scale_mic_y',self.scale_mic_y)
+        rospy.set_param('~scale_mic_z',self.scale_mic_z)
 
-        for i in range(2000):
-            rospy.sleep(1)
-            rospy.loginfo('Angle: ' + str(self.est_angle))
-            rospy.loginfo('Score: ' + str(self.est_score))
-            
-
-
-
-        
+        rospy.wait_for_message("/recognizer/output",String)
+        sleep(2)
         return StartCalibrationResponse()
 
+    def rotater(self,goal_voice_direction):
+        current_angle = self.get_current_angle()
+        rospy.loginfo(current_angle)
+        goal_angle = current_angle - goal_voice_direction 
+        if goal_angle > 180:
+            goal_angle = goal_angle - 360
+        elif goal_angle <-180:
+            goal_angle = goal_angle + 360    
+
+        rospy.loginfo(goal_angle)
+        if goal_voice_direction < 0:
+            rot_speed = 1
+        if goal_voice_direction > 0:
+            rot_speed = -1
+
+        while abs(self.get_current_angle() - goal_angle) > 5 :
+            rot_cmd = Twist()
+            rot_cmd.angular.z = rot_speed
+            self.cmd_vel_pub.publish(rot_cmd)
+            rospy.sleep(0.1)
+        rot_cmd = Twist()
+        self.cmd_vel_pub.publish(rot_cmd)
+  
+    def get_current_angle(self):
+        try:
+            (trans,quat) = self.tf_listener.lookupTransform("/odom","/base_link",rospy.Time(0))
+            angles =  euler_from_quaternion(quat)
+
+            return math.degrees(angles[2])
+
+        except Exception, e:
+            rospy.loginfo("getting odom failed")
+            return
 
 
     def cleanup(self):
