@@ -393,7 +393,7 @@ class Demo_voice_command:
                     self.rotater(self.last_rotation*(-1))
                 except Exception, e:
                     pass
-                self.current_state = self.last_states
+                self.current_state = self.last_state
 
         elif self.current_state == "mimic":
             # mimic state for debugging voice, will repeat what it hear
