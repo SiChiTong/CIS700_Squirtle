@@ -389,7 +389,11 @@ class Demo_voice_command:
                 self.current_state = "mimic"
             else:
                 self.say(["sorry, i can't recognize your command","no command received","I can't hear you sir","back to previous state","i can't recognize","I'm not sure, sir","negative"])
-                self.current_state = self.last_state
+                try:
+                    self.rotater(self.last_rotation*(-1))
+                except Exception, e:
+                    pass
+                self.current_state = self.last_states
 
         elif self.current_state == "mimic":
             # mimic state for debugging voice, will repeat what it hear
