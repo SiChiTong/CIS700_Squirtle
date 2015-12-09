@@ -41,7 +41,7 @@ class armJointTest():
 			self.pos_sh2 = 0.00
 			self.pos_el = 0.00
 			self.pos_wr = 0.00
-			self.pos_gr = 0.00
+			self.pos_gr = -1.57
 			###########################################################################
 
 			# Publish the initial position of all the servos

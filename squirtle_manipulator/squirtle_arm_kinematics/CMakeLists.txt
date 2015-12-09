@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(squirtle_arm)
+project(squirtle_arm_kinematics)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -101,7 +101,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES squirtle_arm
+#  LIBRARIES squirtle_arm_kinematics
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
@@ -118,24 +118,24 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(squirtle_arm
-#   src/${PROJECT_NAME}/squirtle_arm.cpp
+# add_library(squirtle_arm_kinematics
+#   src/${PROJECT_NAME}/squirtle_arm_kinematics.cpp
 # )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(squirtle_arm ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(squirtle_arm_kinematics ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
-# add_executable(squirtle_arm_node src/squirtle_arm_node.cpp)
+# add_executable(squirtle_arm_kinematics_node src/squirtle_arm_kinematics_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-# add_dependencies(squirtle_arm_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(squirtle_arm_kinematics_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(squirtle_arm_node
+# target_link_libraries(squirtle_arm_kinematics_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -154,7 +154,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS squirtle_arm squirtle_arm_node
+# install(TARGETS squirtle_arm_kinematics squirtle_arm_kinematics_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -179,7 +179,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_squirtle_arm.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_squirtle_arm_kinematics.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
