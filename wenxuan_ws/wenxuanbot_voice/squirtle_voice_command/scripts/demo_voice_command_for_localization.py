@@ -246,12 +246,7 @@ class Demo_voice_command:
 
     def receive_speech_callback(self,msg):
         # print what it recognized
-        try:
-            resp = self.get_voice_direction_service()
-            self.rotater(resp.direction)
-        except Exception, e:
-            pass
-        
+
         rospy.loginfo(msg.data)
         command = self.parse_command(msg.data,"contain")
 
@@ -266,6 +261,13 @@ class Demo_voice_command:
             # free state
             if command == "summoning":
                 # only summoning can activate turtlebot in this state
+                try:
+                    resp = self.get_voice_direction_service()
+                    self.rotater(resp.direction)
+                    self.last_rotation = resp.direction
+                except Exception, e:
+                    pass
+        
                 self.say(["yes, sir, i'm waiting for your command","squirtle, standing by","waiting for command","yes, sir","what's your call, sir","I'm here sir", "ok, give me a task"])
                 self.current_state = "wfc"
                 self.last_state = "free"
@@ -370,7 +372,15 @@ class Demo_voice_command:
                     self.say(['task do not exist, sir'])
 
             elif command == "nothing":
+
+
                 self.say(["ok, sir, good luck","sure, i will keep standing by","fine, call me when you need","any time, sir","ok, sir","as you wish"])
+                try:
+                    self.rotater(self.last_rotation*(-1))
+                    
+                except Exception, e:
+                    pass
+
                 self.current_state = self.last_state
 
             elif command == 'start mimic':
