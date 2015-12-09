@@ -199,7 +199,7 @@ class Demo_voice_command:
         self.busy_task = "free"
 
         # dictionary indicating phrases to command map
-        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle','Jarvis'],
+        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle','jarvis'],
                                     'forward':['move forward','go forward'],
                                     'backward':['move backward','go backward'],
                                     'turn left': ['turn left'],
@@ -246,9 +246,12 @@ class Demo_voice_command:
 
     def receive_speech_callback(self,msg):
         # print what it recognized
-        resp = self.get_voice_direction_service()
-        self.rotater(resp.direction)
-
+        try:
+            resp = self.get_voice_direction_service()
+            self.rotater(resp.direction)
+        except Exception, e:
+            pass
+        
         rospy.loginfo(msg.data)
         command = self.parse_command(msg.data,"contain")
 
@@ -448,7 +451,7 @@ class Demo_voice_command:
 
         except Exception, e:
             rospy.loginfo("getting odom failed")
-            return
+            return 0
 
     def cleanup(self):
         # cleanup to ensure a decent shutdown

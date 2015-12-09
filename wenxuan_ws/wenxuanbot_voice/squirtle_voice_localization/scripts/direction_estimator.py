@@ -191,8 +191,12 @@ class Direction_estimator:
         
         say_pub.publish("Thanks, please stay in position, rotating...")
         # here turtlebot will rotate to let you speak to his left side
-        self.rotater(60)
-
+        try:
+            self.rotater(60)
+        except Exception, e:
+            rospy.loginfo('rotate failed, turtlebot maybe offline')
+            pass
+  
         say_pub.publish("OK, please call me like you did before")
         self.wait_for_certain_message("i'm here")
         # calibrate left side mic
@@ -202,11 +206,20 @@ class Direction_estimator:
         sum_x = (sum(self.mic_data_buffer_x) + self.window_size * self.offset_mic_x)
         sum_z = (sum(self.mic_data_buffer_z) + self.window_size * self.offset_mic_z)
 
-        self.scale_mic_z = float(sum_x) / float(sum_z)
+        try:
+            self.scale_mic_z = float(sum_x) / float(sum_z)
+        except Exception, e:
+            pass
+        
         rospy.loginfo("calibrated scale_mic_z: " + str(self.scale_mic_z));
 
         say_pub.publish("Thanks, stay in position, there is one last step...")
-        self.rotater(-120)
+        try:
+            self.rotater(-120)
+        except Exception, e:
+            rospy.loginfo('rotate failed, turtlebot maybe offline')
+            pass
+        
         say_pub.publish("OK, please call me")
         self.wait_for_certain_message("i'm here")
         # calibrate right side mic
@@ -215,13 +228,17 @@ class Direction_estimator:
         sum_x = (sum(self.mic_data_buffer_x) + self.window_size * self.offset_mic_x)
         sum_y = (sum(self.mic_data_buffer_y) + self.window_size * self.offset_mic_y)
 
-        self.scale_mic_y = float(sum_x) / float(sum_y)
+        try:
+            self.scale_mic_y = float(sum_x) / float(sum_y)
+        except Exception, e:
+            pass   
         rospy.loginfo("calibrated scale_mic_y: " + str(self.scale_mic_y));
 
 
         say_pub.publish("Scale calibration complete.")
         say_pub.publish("Calibration successful, now I can know where you are.")
         say_pub.publish("har har har har")
+        say_pub.publish("ha ha ha ha")
 
         rospy.set_param('~offset_mic_x',self.offset_mic_x)
         rospy.set_param('~offset_mic_y',self.offset_mic_y)
