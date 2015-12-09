@@ -135,7 +135,29 @@ class Action_thread(threading.Thread):
         self.cleanup()
 
     def action_goto(self,destination):
-        self.voice_command_obj.say(["sorry, sir, this method is not implemented yet, going back to free state"])
+        self.voice_command_obj.say(["ok, sir, task received, I'm going to " + destination])
+        self.voice_command_obj.current_state = "busy"
+        self.voice_command_obj.busy_task = "go to "+ destination
+        #destination =  "charity's office" "grasp lab"
+        pub = rospy.Publisher('/current_task', String, queue_size=1)
+        rospy.sleep(2)
+
+        if destination == "grasp lab":
+            current_task_string = "go_to_room GRASP_Lab"
+        elif destination == "charity's office":
+            current_task_string = "go_to_room charity_office"
+
+        # keep listen to success message in /robot_state, if not successm keep publishing current task    
+        success_msg = None
+        while success_msg is None or success_msg.data != "success":
+            try:
+                success_msg = rospy.wait_for_message("/robot_state",String,timeout = 1) 
+            except Exception, e:
+                success_msg = None
+            pub.publish(current_task_string)
+
+        
+        self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
         self.cleanup()
 
     def action_spin(self,duration):
@@ -173,7 +195,7 @@ class Demo_voice_command:
         self.busy_task = "free"
 
         # dictionary indicating phrases to command map
-        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle'],
+        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle','Jarvis'],
                                     'forward':['move forward','go forward'],
                                     'backward':['move backward','go backward'],
                                     'turn left': ['turn left'],
@@ -181,7 +203,9 @@ class Demo_voice_command:
                                     'spin': ['spin','spinning'],
                                     'start mimic': ['start mimic','begin mimic','enter mimic'],
                                     'stop mimic': ['stop mimic','exit mimic'],
-                                    'go to task': ['go to'],
+                                    'go to charity': ['go to charity'],
+                                    'go to grasp': ['go to grasp'],
+                                    
                                     'introduce': ['introduce yourself'],
                                     'report state': ['are you busy','doing anything','what are you doing', "your task"],
                                     'nothing':['nothing','no thanks','dismiss'],
@@ -292,14 +316,24 @@ class Demo_voice_command:
                 self.thread1 = Action_thread(self,"spin","forever")
                 self.thread1.start()
 
-            elif command == "go to task":
+            elif command == "go to charity":
                 try:
                     if not self.thread1.stopped():
                         self.thread1.stop()
                 except Exception, e:
                     pass
-                self.thread1 = Action_thread(self,"goto","some place")
+                self.thread1 = Action_thread(self,"goto","charity's office")
                 self.thread1.start()
+
+            elif command == "go to grasp":
+                try:
+                    if not self.thread1.stopped():
+                        self.thread1.stop()
+                except Exception, e:
+                    pass
+                self.thread1 = Action_thread(self,"goto", "grasp lab")
+                self.thread1.start()
+
 
             elif command == "introduce":
                 self.say(['hello, everyone, my name is squirtle, from team for, this is my voice command demo, i will execute some easy tasks in this demo to show my voice architecture'])

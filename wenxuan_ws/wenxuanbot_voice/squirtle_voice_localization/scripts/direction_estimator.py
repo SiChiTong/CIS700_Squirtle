@@ -14,8 +14,7 @@ from squirtle_voice_localization.srv import *
 
 from collections import deque #queue for buffering mic data
 from numpy import argmax
-
-
+import tf
 
 class Direction_estimator:
     """This class to for estimating voice angle using microphone array strength"""
@@ -41,8 +40,8 @@ class Direction_estimator:
         self.mic_data_buffer_x = deque(maxlen = self.window_size)
         self.mic_data_buffer_y = deque(maxlen = self.window_size)
         self.mic_data_buffer_z = deque(maxlen = self.window_size)
-        self.est_angle = 0
-        self.est_score = 0
+        self.est_angle = 0.0
+        self.est_score = 0.01
 
         # get the parameters, should set these in launch files 
         # also, self.<parameter> will be modified during calibration
@@ -95,9 +94,9 @@ class Direction_estimator:
             adjust_angle = ((sum_z-sum_y)-(sum_z-sum_x))/((sum_z-sum_y)+(sum_z-sum_x))*60
 
         self.est_angle = self.normalize_angle(main_angle + adjust_angle)  
-        self.score = (max([sum_x,sum_y,sum_z]) - min([sum_x,sum_y,sum_z])) / max([sum_x,sum_y,sum_z]) 
+        self.est_score = (max([sum_x,sum_y,sum_z]) - min([sum_x,sum_y,sum_z])) / max([sum_x,sum_y,sum_z]) 
          
-        return (self.est_angle , self.score)
+        return (self.est_angle , self.est_score)
 
     def receive_mic_callback(self,msg):
         # handle mic data when arrive
@@ -109,7 +108,7 @@ class Direction_estimator:
         # for publishing
         msg_pub = DirectionScore()
         msg_pub.direction = self.est_angle
-        msg_pub.score = self.score
+        msg_pub.score = self.est_score
         
         # log to debug
         #rospy.loginfo('Angle: ' + str(self.est_angle))
@@ -140,7 +139,7 @@ class Direction_estimator:
         say_pub = rospy.Publisher('/mouth/string_to_say', String, queue_size=10)
         move_pub = rospy.Publisher('/cmd_vel_mux/input/teleop', String, queue_size=10) 
         tf_listener = tf.TransformListener()
-        
+
 
         rospy.sleep(2)
 
@@ -152,6 +151,9 @@ class Direction_estimator:
 
         say_pub.publish("Please stand in front of me and call me")
 
+        #TODO: test this
+        rospy.wait_for_message("/recognizer/output")
+        
         say_pub.publish("Thanks, please stay in position, rotating...")
 
         say_pub.publish("OK, please call me like you did before")
@@ -170,15 +172,13 @@ class Direction_estimator:
         for i in range(2000):
             rospy.sleep(1)
             rospy.loginfo('Angle: ' + str(self.est_angle))
-            rospy.loginfo('Score: ' + str(self.score))
+            rospy.loginfo('Score: ' + str(self.est_score))
             
 
 
 
         
         return StartCalibrationResponse()
-            
-
 
 
 
