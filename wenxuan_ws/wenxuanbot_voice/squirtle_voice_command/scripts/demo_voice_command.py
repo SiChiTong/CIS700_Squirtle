@@ -139,7 +139,12 @@ class Action_thread(threading.Thread):
         self.voice_command_obj.current_state = "busy"
         self.voice_command_obj.busy_task = "go to "+ destination
         #destination =  "charity's office" "grasp lab"
-        pub = rospy.Publisher('/current_task', String, queue_size=1)
+        try:
+            pub = rospy.Publisher('/current_task', String, queue_size=1)
+        except Exception, e:
+            rospy.loginfo('failed to publish on /current_task')
+            self.cleanup()
+            return
         rospy.sleep(2)
 
         if destination == "grasp lab":
@@ -149,15 +154,20 @@ class Action_thread(threading.Thread):
 
         # keep listen to success message in /robot_state, if not successm keep publishing current task    
         success_msg = None
-        while success_msg is None or success_msg.data != "success":
+        while success_msg is None or success_msg.data != "success " + destination:
             try:
                 success_msg = rospy.wait_for_message("/robot_state",String,timeout = 1) 
             except Exception, e:
                 success_msg = None
             pub.publish(current_task_string)
 
+        try:
+            self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
+        except Exception, e:
+            rospy.loginfo('failed to say task complete')
+            self.cleanup()
+            return
         
-        self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
         self.cleanup()
 
     def action_spin(self,duration):
