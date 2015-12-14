@@ -101,7 +101,7 @@ class robotStateNode():
 			'find_person' : 'roslaunch squirtle_speech squirtle_speech.launch',
 			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
 			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
-			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			'deliver_message' : 'roslaunch squirtle_speech squirtle_speech.launch'
 		}
 
 		self.killSubroutines = {
