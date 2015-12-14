@@ -6,7 +6,7 @@ by Mayumi Mohan
 
 # App should preferrably be turned on before running the node... 8 second delay to establish connection if not
 # Subscribes to: /current_task 
-# Publishes: 
+# Publishes: /nexusMessage
 '''
 
 import roslib
