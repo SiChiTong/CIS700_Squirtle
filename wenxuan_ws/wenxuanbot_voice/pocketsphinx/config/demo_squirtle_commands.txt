@@ -40,4 +40,5 @@ go to grasp lab
 Jarvis
 voice localization calibration
 let's begin
-
+i got it
+you have it
