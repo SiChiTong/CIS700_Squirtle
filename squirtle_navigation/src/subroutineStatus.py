@@ -41,6 +41,7 @@ class subsroutinestatus:
 
 	def __init__(self, argument):
 		self.subRoutineStatus = 0
+		self.sub = rospy.Subscriber('send_goal', String, self.sendGoalcallBack)
 
 		# Modify the status message got from the navigation stack to the required format
 		self.status = {
@@ -98,6 +99,10 @@ class subsroutinestatus:
 		else:
 			self.subRoutineStatus = data.status_list[-1].status
 			print data.status_list[-1].status
+
+	def sendGoalcallBack(self, data):
+		if data.data == "true":
+			os.system("rosrun squirtle_navigation destinationPoint.py")
 
 if __name__=="__main__":
     if len(sys.argv) != 4:
