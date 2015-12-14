@@ -33,19 +33,10 @@ class speechStatus():
 		self.buttonPress = "not_init"
 #		Map the tasks to the appropriate voice commands
 		self.speechCommand = {
-
-## commented old version of TTS
-#			'retrieve_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_retrieve_object.py',
-#			'deliver_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_object.py',
-#			'deliver_message' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_message.py',
-#			'find_person' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_find_person.py',
-			'retrieve_object' : 'rosrun sound_play say.py',
-			'deliver_object' : 'rosrun sound_play say.py',
-			'deliver_message' : 'rosrun sound_play say.py',
-			'find_person' : 'rosrun sound_play say.py',
-
-
-
+			'retrieve_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_retrieve_object.py',
+			'deliver_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_object.py',
+			'deliver_message' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_message.py',
+			'find_person' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_find_person.py',
 		}
 		rospy.init_node("speechStatus", anonymous=True)
 #		Initialize the publishers and subscribers

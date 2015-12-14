@@ -11,13 +11,14 @@
 	<node pkg="squirtle_utils" type="robotStateNode.py" name="robotState" output="screen" respawn="true"/>
 
 	<node name="myPose" pkg="squirtle_navigation" type="myPose.py" output="screen"/>
-
-	<include file="$(find squirtle_voice_command)/launch/demo_squirtle_command.launch"/>
+	
+	<!-- bringup only recognizer and sound_play node to offer TTS and STT (handling of these will be launched dynamically) -->
+	<include file="$(find squirtle_voice_command)/launch/only_recognizer_soundplayer.launch"/>
 
     <!-- Bring up Rviz with the default configuration for Squirtle -->
 	<!-- node name="rviz" pkg="rviz" type="rviz" args="-d $(find squirtle_bringup)/include/squirtle.rviz" required="true" -->
 	
-	<!-- BTreceiver node for Nexus -->
+	<!-- BTreceiver node for Nexus -->S
 	<!--node name="BTreceiver" pkg="squirtle_nexus" type="BTreceiver.py" output="screen"-->
 
 </launch>
