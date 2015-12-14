@@ -28,6 +28,7 @@ class Mouth_talker:
         self.recognizer_stop = rospy.ServiceProxy('/recognizer/stop', std_srvs.srv.Empty)
         self.recognizer_start = rospy.ServiceProxy('/recognizer/start', std_srvs.srv.Empty)
         
+        rospy.sleep(1)
         self.say("mouth on line.")
 
     def callback(self,msg):

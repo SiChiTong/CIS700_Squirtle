@@ -36,7 +36,11 @@ import std_srvs.srv
 import random
 import threading
 from geometry_msgs.msg import Twist
-
+from squirtle_voice_localization.msg import DirectionScore
+from squirtle_voice_localization.srv import *
+import tf
+from tf.transformations import euler_from_quaternion
+import math
 
 class Action_thread(threading.Thread):
     """this class is for multi-threading an action task"""
@@ -139,12 +143,7 @@ class Action_thread(threading.Thread):
         self.voice_command_obj.current_state = "busy"
         self.voice_command_obj.busy_task = "go to "+ destination
         #destination =  "charity's office" "grasp lab"
-        try:
-            pub = rospy.Publisher('/current_task', String, queue_size=1)
-        except Exception, e:
-            rospy.loginfo('failed to publish on /current_task')
-            self.cleanup()
-            return
+        pub = rospy.Publisher('/current_task', String, queue_size=1)
         rospy.sleep(2)
 
         if destination == "grasp lab":
@@ -154,26 +153,21 @@ class Action_thread(threading.Thread):
 
         # keep listen to success message in /robot_state, if not successm keep publishing current task    
         success_msg = None
-        while success_msg is None or success_msg.data != "success " + destination:
+        while success_msg is None or success_msg.data != "success":
             try:
                 success_msg = rospy.wait_for_message("/robot_state",String,timeout = 1) 
             except Exception, e:
                 success_msg = None
             pub.publish(current_task_string)
 
-        try:
-            self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
-        except Exception, e:
-            rospy.loginfo('failed to say task complete')
-            self.cleanup()
-            return
         
+        self.voice_command_obj.say([ self.voice_command_obj.busy_task + " complete, sir, return to free state"])
         self.cleanup()
 
     def action_spin(self,duration):
         self.voice_command_obj.say(["sorry, sir, this method is not implemented yet, going back to free state"])
         self.cleanup()
-        
+
 
 class Demo_voice_command:
     """This script is for demo of voice command of Team4 squirtle"""
@@ -205,7 +199,7 @@ class Demo_voice_command:
         self.busy_task = "free"
 
         # dictionary indicating phrases to command map
-        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle','Jarvis'],
+        self.phrases_to_command = {'summoning': ['turtlebot', 'squirtle','jarvis'],
                                     'forward':['move forward','go forward'],
                                     'backward':['move backward','go backward'],
                                     'turn left': ['turn left'],
@@ -218,9 +212,10 @@ class Demo_voice_command:
                                     
                                     'introduce': ['introduce yourself'],
                                     'report state': ['are you busy','doing anything','what are you doing', "your task"],
-                                    'nothing':['nothing','no thanks','dismiss'],
+                                    'nothing':['nothing','no thanks','dismiss','forget it'],
                                     'greetings':['how are you','hello turtlebot','greetings turtlebot','whats up'],
-                                    
+                                    'calibration': ['voice localization calibration'],
+
                                     # stop has been put to last priority, so that it will only recognized if it's nothing above
                                     'stop task':['stop', 'cancel']
                                     }
@@ -231,6 +226,10 @@ class Demo_voice_command:
 
         # subcribe to speech recognizer from pocketsphinx
         rospy.Subscriber('/recognizer/output',String,self.receive_speech_callback)
+
+        self.tf_listener = tf.TransformListener()
+
+        self.get_voice_direction_service = rospy.ServiceProxy('/direction_estimator/get_direction_score',GetDirectionScore)
 
         self.say(["squirtle start listening"])
 
@@ -245,10 +244,8 @@ class Demo_voice_command:
         rospy.sleep(delay_length)
         self.recognizer_start()
 
-
     def receive_speech_callback(self,msg):
         # print what it recognized
-
 
         rospy.loginfo(msg.data)
         command = self.parse_command(msg.data,"contain")
@@ -258,13 +255,19 @@ class Demo_voice_command:
 
         rospy.loginfo("now at " + self.current_state + " state")
 
-
     def state_switcher(self,msg,command):
 
         if self.current_state == "free":
             # free state
             if command == "summoning":
                 # only summoning can activate turtlebot in this state
+                try:
+                    resp = self.get_voice_direction_service()
+                    self.rotater(resp.direction)
+                    self.last_rotation = resp.direction
+                except Exception, e:
+                    pass
+        
                 self.say(["yes, sir, i'm waiting for your command","squirtle, standing by","waiting for command","yes, sir","what's your call, sir","I'm here sir", "ok, give me a task"])
                 self.current_state = "wfc"
                 self.last_state = "free"
@@ -344,6 +347,15 @@ class Demo_voice_command:
                 self.thread1 = Action_thread(self,"goto", "grasp lab")
                 self.thread1.start()
 
+            elif command == "calibration":
+                self.say(['Yes, sir begin voice localization calibration'])
+
+                calibration_caller = rospy.ServiceProxy('/direction_estimator/start_mic_calibration', StartCalibration)  
+                calibration_caller()
+
+                self.say(['calibration complete, return to free state'])
+                self.current_state = self.last_state
+                
 
             elif command == "introduce":
                 self.say(['hello, everyone, my name is squirtle, from team for, this is my voice command demo, i will execute some easy tasks in this demo to show my voice architecture'])
@@ -360,7 +372,15 @@ class Demo_voice_command:
                     self.say(['task do not exist, sir'])
 
             elif command == "nothing":
+
+
                 self.say(["ok, sir, good luck","sure, i will keep standing by","fine, call me when you need","any time, sir","ok, sir","as you wish"])
+                try:
+                    self.rotater(self.last_rotation*(-1))
+                    
+                except Exception, e:
+                    pass
+
                 self.current_state = self.last_state
 
             elif command == 'start mimic':
@@ -369,6 +389,10 @@ class Demo_voice_command:
                 self.current_state = "mimic"
             else:
                 self.say(["sorry, i can't recognize your command","no command received","I can't hear you sir","back to previous state","i can't recognize","I'm not sure, sir","negative"])
+                try:
+                    self.rotater(self.last_rotation*(-1))
+                except Exception, e:
+                    pass
                 self.current_state = self.last_state
 
         elif self.current_state == "mimic":
@@ -382,7 +406,6 @@ class Demo_voice_command:
 
         else:
             self.say(["sir, my state is encountering an error, please check your code"])
-
 
     def parse_command(self,input_phrase,match_method):
         # this method is to convert an input string and output a command
@@ -407,6 +430,42 @@ class Demo_voice_command:
             return "error"
 
         return "no command"
+
+    def rotater(self,goal_voice_direction):
+        current_angle = self.get_current_angle()
+        rospy.loginfo(current_angle)
+        goal_angle = current_angle - goal_voice_direction 
+        if goal_angle > 180:
+            goal_angle = goal_angle - 360
+        elif goal_angle <-180:
+            goal_angle = goal_angle + 360    
+
+        rospy.loginfo(goal_angle)
+        if goal_voice_direction < 0:
+            rot_speed = 2
+        if goal_voice_direction > 0:
+            rot_speed = -2
+
+        while abs(self.get_current_angle() - goal_angle) > 10:
+            rot_cmd = Twist()
+            rot_cmd.angular.z = rot_speed
+            self.cmd_vel_pub.publish(rot_cmd)
+            rospy.sleep(0.01)
+        rot_cmd = Twist()
+        self.cmd_vel_pub.publish(rot_cmd)
+
+        
+
+    def get_current_angle(self):
+        try:
+            (trans,quat) = self.tf_listener.lookupTransform("/odom","/base_link",rospy.Time(0))
+            angles =  euler_from_quaternion(quat)
+
+            return math.degrees(angles[2])
+
+        except Exception, e:
+            rospy.loginfo("getting odom failed")
+            return 0
 
     def cleanup(self):
         # cleanup to ensure a decent shutdown
