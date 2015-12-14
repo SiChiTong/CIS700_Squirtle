@@ -30,6 +30,7 @@ class robotStateNode():
 		rospy.Subscriber("/current_task", String, self.TaskListMessageCallback)
 		rospy.Subscriber("/current_subroutine_status", String, self.SubroutineStatusMessageCallback)
 		self.StatePub = rospy.Publisher('robot_state', String, queue_size=10)
+		self.subroutineStatus == 'idle'
 		
 		rate = rospy.Rate(10) # Publish at 10hz
 		while not rospy.is_shutdown():
@@ -100,7 +101,7 @@ class robotStateNode():
 			'find_person' : 'roslaunch squirtle_speech squirtle_speech.launch',
 			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
 			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
-			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			'deliver_message' : 'roslaunch squirtle_speech squirtle_speech.launch'
 		}
 
 		self.killSubroutines = {

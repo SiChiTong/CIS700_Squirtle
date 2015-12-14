@@ -28,28 +28,29 @@ class BTreceiver():
     rospy.init_node("BTreceiver") 
     #publisher
     self.pub = rospy.Publisher('nexusMessage', String, queue_size=1)
-    self.debugpub = rospy.Publisher('BTdebug', String, queue_size=1)
+    #self.debugpub = rospy.Publisher('BTdebug', String, queue_size=1)
     #subscriber
     self.sub = rospy.Subscriber("/current_task", String, self.stateCallback)
     rate = rospy.Rate(10)
 
     # Setup Bluetooth 
-    os.system("sudo sdptool add --channel=22 SP");
-    os.system("sudo rfcomm listen /dev/rfcomm0 22 &");
-    print("YOU HAVE 8 SECONDS TO CONNECT THE APP!!!!!!!!!")
-    time.sleep(8) ## 
+    os.system("sudo sdptool add --channel=16 SP");
+    os.system("sudo rfcomm listen /dev/rfcomm6 16 &");
+    print("YOU HAVE 10 SECONDS TO CONNECT THE APP!!!!!!!!!")
+    time.sleep(10) ## 
 
     # Serial port setup
     ser = serial.Serial()
-    ser.port = "/dev/rfcomm0" # may be called something different
+    ser.port = "/dev/rfcomm6" # may be called something different
     ser.baudrate = 9600 # may be different
     ser.timeout = 0 # may be different
+    
     ser.open()
 
-    rate = rospy.Rate(10) # 10hz
+    rate = rospy.Rate(8) # 10hz
     android_data = ""
     oldData = ""
-    self.debugpub.publish('line 50:')
+    #self.debugpub.publish('line 50:')
     while(ser.isOpen()):  
       if oldData != self.state:     
         ser.write(self.state)
@@ -57,7 +58,7 @@ class BTreceiver():
 
       if ser.inWaiting>0:
         btMessage = ser.read()
-        self.debugpub.publish(btMessage)
+        #self.debugpub.publish(btMessage)
         self.pub.publish(self.state)
         if btMessage == "$":
           self.pub.publish(android_data)
