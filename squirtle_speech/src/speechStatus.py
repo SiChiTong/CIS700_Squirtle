@@ -35,6 +35,7 @@ class speechStatus():
 		self.speechCommand = {
 			'retrieve_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_retrieve_object.py',
 			'deliver_object' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_object.py',
+			'deliver_message' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_deliver_message.py',
 			'find_person' : 'python ~/catkin_ws/src/CIS700_Squirtle/squirtle_speech/include/speech_find_person.py',
 		}
 		rospy.init_node("speechStatus", anonymous=True)
