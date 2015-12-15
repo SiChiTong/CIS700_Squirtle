@@ -102,6 +102,7 @@ class subsroutinestatus:
 
 	def sendGoalcallBack(self, data):
 		if data.data == "true":
+			rospy.sleep(1)
 			os.system("rosrun squirtle_navigation destinationPoint.py")
 
 if __name__=="__main__":

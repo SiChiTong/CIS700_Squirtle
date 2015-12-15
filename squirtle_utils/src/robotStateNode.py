@@ -40,7 +40,9 @@ class robotStateNode():
 				subRoutineToKill = subRoutineToKill[0]
 				os.system(self.killSubroutines[subRoutineToKill])
 				self.taskStatus = "success"
-				self.StatePub.publish(self.taskStatus + " " + str(self.currentTask))
+				for i in range (0,100):
+					self.StatePub.publish(self.taskStatus + " " + str(self.currentTask))
+					rospy.sleep(0.03)
 				# If python uses pointers, fix this
 				self.lastTask = self.currentTask
 				self.subroutineStatus = "idle"

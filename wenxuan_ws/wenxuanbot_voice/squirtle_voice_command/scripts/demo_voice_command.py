@@ -154,11 +154,8 @@ class Action_thread(threading.Thread):
 
         # keep listen to success message in /robot_state, if not successm keep publishing current task    
         success_msg = None
-        while success_msg is None or success_msg.data != "success " + destination:
-            try:
-                success_msg = rospy.wait_for_message("/robot_state",String,timeout = 1) 
-            except Exception, e:
-                success_msg = None
+        while success_msg is None or "success" not in success_msg.data:
+            success_msg = rospy.wait_for_message("/robot_state",String) 
             pub.publish(current_task_string)
 
         try:
