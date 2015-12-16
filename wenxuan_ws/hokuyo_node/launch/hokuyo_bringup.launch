@@ -10,7 +10,7 @@ also, be sure not to exceed safety angle range
   <node name="hokuyo" pkg="hokuyo_node" type="hokuyo_node" respawn="false" output="screen">
    
     <param name="calibrate_time" type="bool" value="false"/>   
-    <param name="port" type="string" value="/dev/ttyACM0"/> 
+    <param name="port" type="string" value="/dev/hokuyolidar"/> 
     <param name="intensity" type="bool" value="false"/>
 
     <!-- the angle range is from -2.086 to 2.092 (safety range)  -->
