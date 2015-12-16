@@ -1,0 +1,14 @@
+<launch>
+    
+
+    <!-- NOTE that currently integration with voice localization is a mess! but this is just for demo, need to reorganize later -->
+    
+    <node name="soundplay_node" pkg="sound_play" type="soundplay_node.py"/>
+
+    <include file="$(find squirtle_voice_localization)/launch/voice_localization_bringup.launch" />
+     
+    <node name="demo_voice_command" pkg="squirtle_voice_command" type="demo_voice_command_for_localization_exploration.py" output="screen"/>
+    
+    
+
+</launch>
