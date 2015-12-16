@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<!-- This launch file will bring up everything you need(well, except turtlebot_bringup) to run exploration
+  you will then need to run the actual exploration(e.g. rosrun squirtle_frontier_exploration simple_exploration)
+-->
+
+<!--      
+lidar driver
+hector mapping
+move base
+exploration planner
+-->
+
+<launch>
+  
+  <include file="$(find hokuyo_node)/launch/hokuyo_mapping_bringup.launch"/>
+
+
+  <!-- move_base part -->
+  <include file="$(find turtlebot_navigation)/launch/includes/move_base.launch.xml"/>
+  <!--TODO: add move_base param override here -->
+
+
+
+  <!-- exploration planner part -->
+  <include file="$(find hector_exploration_node)/launch/exploration_planner.launch"/>
+
+
+
+</launch>
