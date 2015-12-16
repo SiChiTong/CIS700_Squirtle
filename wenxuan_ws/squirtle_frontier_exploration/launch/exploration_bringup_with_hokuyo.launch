@@ -26,5 +26,4 @@ exploration planner
   <include file="$(find hector_exploration_node)/launch/exploration_planner.launch"/>
 
 
-
 </launch>
