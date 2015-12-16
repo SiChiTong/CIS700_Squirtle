@@ -397,7 +397,7 @@ class Demo_voice_command:
                         break
                 self.say(['ok, sir, starting to move'])
 
-                os.system("rosrun squirtle_frontier_exploration simple_exploration")
+                os.system("rosrun squirtle_frontier_exploration simple_exploration_with_sound")
 
 
                 # well... current this will run forever, without decent stop. 
