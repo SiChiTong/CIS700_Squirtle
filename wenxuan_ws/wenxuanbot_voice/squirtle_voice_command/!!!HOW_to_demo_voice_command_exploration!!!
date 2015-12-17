@@ -1,0 +1,41 @@
+This tutorial with teach you how to run the voice command with localization and exploration
+relavent file:   demo_squirtle_command_with_localization_exploration.launch
+
+
+Dependencies:
+	This demo needs pretty much everything:
+	turtlebot_bringup
+	sound_play
+	squirtle_voice_localization
+	pocket_sphinx
+	hokuyo_node
+	hector_mapping
+	move_base
+	hector_exploration_node
+	squirtle_frontier_exploration
+	squirtle_mouth
+
+	In addtion, hardware requirment:
+	voice localization arduino kit for squirtle (arduino port is by default at /dev/ttyACM0)
+	hokuyo lidar (udev setup needed,please see its package)
+	turtlebot
+
+	(of course you don't need to bringup all of them, some of them is loaded dynamically)
+
+
+Steps:
+	0.Be sure to plug in arduino first and then hokuyo, to make sure arduino is at /dev/ttyACM0
+
+	1.bring up turtlebot:
+		$ roslaunch turtlebot_bringup minimal.launch
+	2.bring up demo file:
+		$ roslaunch squirtle_voice_command demo_squirtle_command_with_localization_exploration.launch
+
+
+	Now it will enter voice command mode, and "begin exploration" is available
+
+
+
+
+
+

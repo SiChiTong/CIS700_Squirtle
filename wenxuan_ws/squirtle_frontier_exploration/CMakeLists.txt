@@ -196,3 +196,7 @@ include_directories(
 add_executable(simple_exploration src/simple_exploration.cpp)
 target_link_libraries(simple_exploration ${catkin_LIBRARIES})
 add_dependencies(simple_exploration hector_nav_msgs_generate_messages)
+
+add_executable(simple_exploration_with_sound src/simple_exploration_with_sound.cpp)
+target_link_libraries(simple_exploration_with_sound ${catkin_LIBRARIES})
+add_dependencies(simple_exploration_with_sound hector_nav_msgs_generate_messages)
