@@ -20,11 +20,6 @@ To simulate the button actions -
 New window - rostopic pubpub -r 5 /nexusMessage std_msgs/String button_not_pressed (It should keep shouting now) ctrl+C
 rostopic pubpub -r 5 /nexusMessage std_msgs/String button_pressed (It should stop shouting, and move on to the next task)
 
-For navigation tasks -
-Wait for the message "Odom received!" to appear on the terminal with the robotStateNode. Then open a new window and open rviz. Set the initial position of the robot through rviz.
-New window - rosrun squirtle_navigation destination.py. (Kill this node, once the robot starts moving)
-
-
 ------------File Descriptions-------------------
 
 --classification_stuff--
@@ -37,6 +32,11 @@ classify.py
 an out-of-the-box image classifer callable from the command line.
 By default it configures and runs the Caffe reference ImageNet model. 
 
+tryTrain1.py
+Model that uses caffe as a feature extractor and uses an SVM model for training
+
+workingTest.py
+Takes in an image as an argument, and uses caffe as a feature extractor and classifies the image through the trained svm classifier. 
 
 --downloader--
 this folder contains a script for downloading images
@@ -79,5 +79,15 @@ node that maintains the tasklist for our tasklist demo
 
 robotStateNode.py
 node that monitors the state of the robot. This node is the finite state machine of the robot that interfaces with the tasklist and the various subroutines.
+
+--squirtle_navigation--
+destinationPoint.py
+node tosend action service to move_base to move the robot to the location
+
+myPose.py
+node that subscribes to amcl_pose and keeps track of the robot's location in the map frame
+
+subroutineStatus.py
+node that checks the status of the navigation task and commnicates with the robotStateNode about the status of the navigation task
 
 
