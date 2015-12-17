@@ -13,6 +13,7 @@ import rospy
 import sys
 import time
 import moveit_commander
+import os
 import moveit_msgs.msg
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Float64
@@ -26,68 +27,74 @@ class squirtleFlowerGreeting():
 		startTime = rospy.get_time()
 		i = 0
 
-		while i<5:
-			if (rospy.get_time() - startTime)>5:
-				i = i+1;
-				startTime = rospy.get_time()
+		os.system("rostopic pub  /gripper_joint/command std_msgs/Float64 -- 1.57 &")
+		rospy.sleep(5)
 
-			if i == 1:
-				# Initial Arm Position
-				#os.system("rosnode kill /armPlanning");
-				print 'Initial Arm Position'
-				targetLocation.position.x = 0.088547521044
-				targetLocation.position.y = 0.316993328381
-				targetLocation.position.z = 0.512233272363
-				targetLocation.orientation.x =  0.0295722736395
-				targetLocation.orientation.y = -0.0284165464407
-				targetLocation.orientation.z = 0.72045953698
-				targetLocation.orientation.w = 0.692283205122
-				self.pos_gr = -1.57
-				#os.system("rosrun squirtle_arm_kinematics armPlanning.py");
-			elif i == 2:
-				#Lift:
-				#os.system("rosnode kill /armPlanning");
-				print 'Lift'
-				targetLocation.position.x = 0.101038497391
-				targetLocation.position.y = 0.00396533110741
-				targetLocation.position.z = 0.781107991419
-				targetLocation.orientation.x = 0.525076324286
-				targetLocation.orientation.y = -0.504541780718
-				targetLocation.orientation.z = 0.494197650205
-				targetLocation.orientation.w = 0.47486959022
-				#os.system("rosrun squirtle_arm_kinematics armPlanning.py");
-			elif i == 3:
-				# Pause
-				#os.system("rosnode kill /armPlanning");
-				self.pos_gr = 1.57
-				print 'Pause'
-				rospy.sleep(10);
-			else:
-				# Return
-				#os.system("rosnode kill /armPlanning");
-				print 'Return'
-				targetLocation.position.x = 0.0881870116312
-				targetLocation.position.y = 0.326027305883
-				targetLocation.position.z = 0.534264838597
-				targetLocation.orientation.x = 0.0626843965696
-				targetLocation.orientation.y = -0.0602336920208
-				targetLocation.orientation.z = 0.718336362869
-				targetLocation.orientation.w = 0.690243028615
-				#os.system("rosrun squirtle_arm_kinematics armPlanning.py");
+		print 'Move to Flower'
+		targetLocation.position.x = 0.0144326423953
+		targetLocation.position.y = 0.263114368294
+		targetLocation.position.z = 0.554147669158
+		targetLocation.orientation.x = -0.15822121316
+		targetLocation.orientation.y = 0.110466551696
+		targetLocation.orientation.z = 0.804522708772
+		targetLocation.orientation.w = 0.561699563586
+		self.group.set_pose_target(targetLocation)
+		
+		
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		
+		self.group.go(wait=True)
+		print "Grasp"
+		rospy.sleep(5)
+		
+		
+		os.system("rostopic pub  /gripper_joint/command std_msgs/Float64 -- -1.2")
+		
+		rospy.wait(2)
+		rospy.sleep(10)
 
-			self.group.set_pose_target(targetLocation)
+		print 'Lift flower'
+		targetLocation.position.x = 0.152084466078
+		targetLocation.position.y = -0.101408893961
+		targetLocation.position.z = 0.687939025664
+		targetLocation.orientation.x = 0.779572704978
+		targetLocation.orientation.y = -0.529587263257
+		targetLocation.orientation.z = 0.276585994996
+		targetLocation.orientation.w = 0.187893362364
+		self.group.set_pose_target(targetLocation)
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		self.group.go(wait=True)
+		rospy.sleep(2)
 
-			# Compute plan and visualize if successful
-			newPlan = self.group.plan()
+		print "Release"
+		os.system("rostopic pub  /gripper_joint/command std_msgs/Float64 -- 1.57 &")
+		rospy.sleep(5)
 
-			# Wait for Rviz to display
-			print "Rviz displaying"
+		# End task
+		print 'Rest'
+		targetLocation.position.x = 0.0637378729914
+		targetLocation.position.y = 0.314422971062
+		targetLocation.position.z = 0.585093066776
+		targetLocation.orientation.x = -0.0363535046398
+		targetLocation.orientation.y = 0.0320124025576
+		targetLocation.orientation.z = 0.749608676985
+		targetLocation.orientation.w = 0.660106400644
+		#os.system("rosrun squirtle_arm_kinematics armPlanning.py");
 
-			# Perform plan on Robot
-			self.group.go(wait=True)
-			self.gr.publish(self.pos_gr)
-			rospy.sleep(5)
+		self.group.set_pose_target(targetLocation)
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		self.group.go(wait=True)
 		self.group.clear_pose_targets()
+		#relax servos
+		for servo in self.servos:
+			self.relaxers[servo]()
+		rospy.sleep(5)
 		#print  self.group.get_planning_frame()
 		## Adding/Removing Objects and Attaching/Detaching Objects
 		## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -97,14 +104,108 @@ class squirtleFlowerGreeting():
 		## When finished shut down moveit_commander.
 		moveit_commander.roscpp_shutdown()
 
-
 	def Subfunc(self):
 				# Subscriber
-		self.sub = rospy.Subscriber("/targetLocation",  Pose, self.stateCallback)
-		self.gr = rospy.Publisher('/gripper_joint/command',Float64, queue_size=1)
+		#self.sub = rospy.Subscriber("/targetLocation",  Pose, self.stateCallback)
+		#self.gr = rospy.Publisher('/gripper_joint/command',Float64, queue_size=1)
 		self.pos_gr = Float64()
 		self.pos_gr = 1.57
 		rospy.sleep(3)
+		
+		targetLocation = Pose()
+		startTime = rospy.get_time()
+		i = 0
+
+		print 'Lift flower'
+		targetLocation.position.x = 0.152084466078
+		targetLocation.position.y = -0.101408893961
+		targetLocation.position.z = 0.687939025664
+		targetLocation.orientation.x = 0.779572704978
+		targetLocation.orientation.y = -0.529587263257
+		targetLocation.orientation.z = 0.276585994996
+		targetLocation.orientation.w = 0.187893362364
+		self.group.set_pose_target(targetLocation)
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		self.group.go(wait=True)
+		rospy.sleep(2)
+
+		os.system("rostopic pub  /gripper_joint/command std_msgs/Float64 -- 1.57 &")
+		rospy.sleep(5)
+
+		print 'Move to Flower'
+		targetLocation.position.x = 0.0144326423953
+		targetLocation.position.y = 0.263114368294
+		targetLocation.position.z = 0.554147669158
+		targetLocation.orientation.x = -0.15822121316
+		targetLocation.orientation.y = 0.110466551696
+		targetLocation.orientation.z = 0.804522708772
+		targetLocation.orientation.w = 0.561699563586
+		self.group.set_pose_target(targetLocation)
+		
+		
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		
+		self.group.go(wait=True)
+		
+		print "Grasp"
+		rospy.sleep(5)
+		
+		os.system("rostopic pub  /gripper_joint/command std_msgs/Float64 -- -1.57 &")
+	
+		rospy.sleep(5)
+
+		print 'Lift flower'
+		targetLocation.position.x = 0.152084466078
+		targetLocation.position.y = -0.101408893961
+		targetLocation.position.z = 0.687939025664
+		targetLocation.orientation.x = 0.779572704978
+		targetLocation.orientation.y = -0.529587263257
+		targetLocation.orientation.z = 0.276585994996
+		targetLocation.orientation.w = 0.187893362364
+		self.group.set_pose_target(targetLocation)
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		self.group.go(wait=True)
+		rospy.sleep(2)
+
+		print "Release"
+		os.system("rostopic pub  /gripper_joint/command std_msgs/Float64 -- 1.57 &")
+		rospy.sleep(5)
+
+		# End task
+		print 'Rest'
+		targetLocation.position.x = 0.0637378729914
+		targetLocation.position.y = 0.314422971062
+		targetLocation.position.z = 0.585093066776
+		targetLocation.orientation.x = -0.0363535046398
+		targetLocation.orientation.y = 0.0320124025576
+		targetLocation.orientation.z = 0.749608676985
+		targetLocation.orientation.w = 0.660106400644
+		#os.system("rosrun squirtle_arm_kinematics armPlanning.py");
+
+		self.group.set_pose_target(targetLocation)
+		# Compute plan and visualize if successful
+		newPlan = self.group.plan()
+		# Perform plan on Robot
+		self.group.go(wait=True)
+		self.group.clear_pose_targets()
+		#relax servos
+		for servo in self.servos:
+			self.relaxers[servo]()
+		rospy.sleep(5)
+		#print  self.group.get_planning_frame()
+		## Adding/Removing Objects and Attaching/Detaching Objects
+		## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		## First, we will define the collision object message
+		collision_object = moveit_msgs.msg.CollisionObject()
+
+		## When finished shut down moveit_commander.
+		moveit_commander.roscpp_shutdown()
 		while not rospy.is_shutdown():
 			pass
 		rospy.spin()

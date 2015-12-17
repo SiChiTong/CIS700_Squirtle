@@ -26,7 +26,7 @@ class sendArmPose():
 		self.pub = rospy.Publisher('targetLocation', Pose, queue_size=1)
 		targetLocation = Pose()
 
-		while(1):
+		while not rospy.is_shutdown():
 			targetLocation.position.x = 0.251364568834
 			targetLocation.position.y = -0.227889839659
 			targetLocation.position.z = -0.522008078422
@@ -35,10 +35,11 @@ class sendArmPose():
 			targetLocation.orientation.z = 0.10104411357
 			targetLocation.orientation.w = 0.0578561190228
 			self.pub.publish(targetLocation)
+		rospy.spin()
 
 if __name__ == '__main__':
 	try:
 		sendArmPose()
 	except rospy.ROSInterruptException:
-		rospy.loginfo("exception")
+		pass
 
