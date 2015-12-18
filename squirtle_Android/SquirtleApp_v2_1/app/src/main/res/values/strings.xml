@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">SquirtleApp_v2_2</string>
+
+    <!-- Common Strings -->
+    <string name="squirtleIntro">Hi!!! I am Squirtle, your friendly neighbourhood Turtlebot!!!</string>
+
+
+    <!-- Squirtle Navigation -->
+    <string name="title_activity_navigation_squirtle">navigationSquirtle</string>
+    <string name="squirtleNav">I am a Turtlebot on a mission to reach a destination!</string>
+
+    <!-- Squirtle Retrieval -->
+    <string name="title_activity_retrieval_squirtle">retrievalSquirtle</string>
+    <string name="squirtleRetr">Press yes if you placed the object on me! Give me</string>
+
+    <!-- Squirtle Delivery -->
+    <string name="title_activity_delivery_squirtle">deliverySquirtle</string>
+    <string name="squirtleDeli">I am on an object delivery mission!</string>
+
+    <!-- Squirtle Wait -->
+    <string name="squirtleWait">I am waiting for a signal from my lazy NUC !</string>
+
+    <!-- Squirtle Follow -->
+    <string name="squirtleFollow">I am honing my stalking abilities!!!</string>
+
+    <!-- Squirtle Message Retrieval -->
+    <string name="squirtleMsgRetrieve">I am getting a message meant to be delivered!!!!!</string>
+
+    <!-- Squirtle Message Delivery -->
+    <string name="squirtleMsgDeliver">I am getting delivering a top-secret message!!!Mum\'s the word!!!</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_test_fragment">TestFragment</string>
+</resources>

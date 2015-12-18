@@ -1,0 +1,40 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context="com.squirtle.maymohan.squirtleapp_v2_2.deliveryFragment">
+
+
+    <ImageView
+        android:layout_width="219dp"
+        android:layout_height="259dp"
+        android:src="@drawable/squirtle_tail"
+        android:id="@+id/landingSquirtle"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"/>
+
+    <TextView
+        android:layout_width="244dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text= "@string/squirtleIntro"
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/functionOne"
+        android:layout_alignStart="@+id/functionOne"
+        android:layout_gravity="center_horizontal|top" />
+
+    <TextView
+        android:layout_width="196dp"
+        android:layout_height="101dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/squirtleDeli"
+        android:id="@+id/textView"
+        android:layout_alignTop="@+id/landingSquirtle"
+        android:layout_alignRight="@+id/functionOne"
+        android:layout_alignEnd="@+id/functionOne"
+        android:layout_gravity="right|center_vertical" />
+
+</FrameLayout>
