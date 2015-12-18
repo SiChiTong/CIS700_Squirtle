@@ -62,7 +62,7 @@ if __name__ == '__main__':
     soundhandle = SoundClient()
     rospy.sleep(1)
 
-    voice = 'voice_kal_diphone'
+    voice = 'voice_cmu_us_rms_arctic_clunits'
     volume = 1.0
     
     if len(sys.argv) == 1:

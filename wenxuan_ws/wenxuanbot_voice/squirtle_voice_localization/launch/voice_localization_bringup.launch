@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="port_arduino" default="/dev/ttyACM0" />
+    <arg name="baud_arduino" default="57600" />
+
+    <include file="$(find squirtle_voice_localization)/launch/arduino_collector_bringup.launch">
+        <!-- pass the arguments to inner launch file -->
+        <arg name="port" value="$(arg port_arduino)" />
+        <arg name="baud" value="$(arg baud_arduino)" />
+    </include >   
+
+    
+    <node pkg="squirtle_voice_localization" type="direction_estimator.py" name="direction_estimator" output="screen">
+        <!-- specify parameters here  -->
+        <param name="offset_mic_x" value="0" />
+        <param name="offset_mic_y" value="0" />
+        <param name="offset_mic_z" value="0" />
+        <param name="scale_mic_x" value="1" />
+        <param name="scale_mic_y" value="1" />
+        <param name="scale_mic_z" value="1" />
+
+    </node>
+
+    <!-- nodes for sound play and recognizer, these are particularly used in calibration -->
+    <!-- note that these is not necessarily belong to voice localization bringup, but just put here for convenience, may TODO: dynamically load and kill them in calibration process -->
+    <node name="recognizer" pkg="pocketsphinx" type="recognizer.py" output="screen">
+        <param name="source" value="alsasrc" />
+        <param name="lm" value="$(find pocketsphinx)/config/demo_squirtle_command.lm"/>
+        <param name="dict" value="$(find pocketsphinx)/config/demo_squirtle_command.dic"/>
+    </node>
+
+    <include file="$(find squirtle_mouth)/launch/squirtle_mouth_bringup.launch" />
+    
+
+</launch>

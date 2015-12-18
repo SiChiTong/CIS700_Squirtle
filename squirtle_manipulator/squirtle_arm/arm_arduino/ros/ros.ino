@@ -28,7 +28,7 @@
 
 /* Build Configuration */
 #define USE_BASE            // Enable support for a mobile base
-#define USE_HW_SERVOS       // Enable only 2/8 servos, but using hardware control
+//#define USE_HW_SERVOS       // Enable only 2/8 servos, but using hardware control
 
 #define CONTROLLER_COUNT    5
 /* Hardware Constructs */
@@ -60,6 +60,8 @@ unsigned char baud = 7;         // ?
 unsigned char ret_level = 1;    // ?
 unsigned char alarm_led = 0;    // ?
 
+// Servo
+Servo myservo;
 /* Pose & Sequence Structures */
 typedef struct{
   unsigned char pose;           // index of pose to transition to 
@@ -101,6 +103,10 @@ void setup(){
   delay(1000);
   scan();
 #endif
+//  myservo.attach(12);  //
+//  myservo.write(20);
+//  pinMode(12,OUTPUT);
+//  analogWrite(12, 50);
 
   userSetup();
   pinMode(0,OUTPUT);     // status LED

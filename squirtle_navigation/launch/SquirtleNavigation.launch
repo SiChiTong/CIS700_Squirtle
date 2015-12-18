@@ -30,7 +30,7 @@
   <rosparam file="$(find wenxuanbot_navigation)/config/costmap_common_params.yaml" command="load" ns="move_base/local_costmap" />   
   
   <!-- Activate the action server to move the robot to the destination -->
-  <node name="destination_point" pkg="squirtle_navigation" type="destinationPoint.py" output="screen"/>
+  <!-- node name="destination_point" pkg="squirtle_navigation" type="destinationPoint.py" output="screen"/ -->
 
   <!-- node name="myPose" pkg="squirtle_navigation" type="myPose.py" output="screen"/ -->
 </launch>

@@ -195,6 +195,10 @@ include_directories(
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} )
 
+add_executable(opencv_detector src/object_detector.cpp)
+target_link_libraries(opencv_detector ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
+add_dependencies(opencv_detector opencv_files_generate_messages_cpp)
+
 add_executable(opencv_image src/image_converter.cpp)
 target_link_libraries(opencv_image ${OpenCV_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(opencv_image opencv_files_generate_messages_cpp)

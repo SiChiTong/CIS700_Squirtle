@@ -1,0 +1,22 @@
+Squirtle_voice_localization is a package that estimate sound direction according to microphone array reading
+
+For detail introduction please check README in package
+
+Bring up Squirtle voice localization will make you available to retrieve voice direction from it
+
+
+
+How to bringup:
+
+It's quite easy to use just plugin your arduino_collector and do:
+
+$ roslaunch squirtle_voice_localization voice_localization_bringup.launch 
+
+This will bring up both arduino node and localization node
+
+ 
+
+
+
+
+

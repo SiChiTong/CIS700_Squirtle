@@ -24,6 +24,7 @@ class myPose():
 		self.taskSub = rospy.Subscriber('/current_task', String, self.taskCallback)
 		self.taskStatusSub = rospy.Subscriber("/current_subroutine_status", String, self.SubroutineStatusMessageCallback)
 		self.pub = rospy.Publisher('initialpose', PoseWithCovarianceStamped, queue_size = 10)
+		self.pub1 = rospy.Publisher('send_goal', String, queue_size = 10)
 		self.newTask = 0
 		self.updatePos = 1
 		self.lastTask = ""
@@ -47,6 +48,7 @@ class myPose():
 				self.lastTask = self.currentTask
 				self.newTask = 0
 				self.updatePos = 1
+				self.pub1.publish("true")
 #			else:
 #				print myPosition
 			rate.sleep

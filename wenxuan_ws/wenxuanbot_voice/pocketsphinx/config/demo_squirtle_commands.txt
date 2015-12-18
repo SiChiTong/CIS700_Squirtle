@@ -19,6 +19,7 @@ mute
 begin mimic
 start mimic
 enter mimic
+end 
 stop mimic
 go to charity's office
 are you busy
@@ -27,8 +28,17 @@ what are you doing
 nothing
 no thanks
 dismiss
+forget it
 how are you 
 greetings turtlebot
 whats up
 stop your task
 stop current task
+come here 
+I'm here
+go to grasp lab 
+Jarvis
+voice localization calibration
+let's begin
+i got it
+you have it

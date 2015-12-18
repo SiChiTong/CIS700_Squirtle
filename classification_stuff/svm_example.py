@@ -29,6 +29,7 @@ clf.fit(X, Y)
 
 # SVM classify 
 Yhat = clf.predict(X)
+Confidence = clf.decision_function(X)
 error = np.sum(abs(Yhat-Y))
 print (numpts-error)/numpts
 

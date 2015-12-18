@@ -31,6 +31,7 @@ class robotStateNode():
 		rospy.Subscriber("/current_subroutine_status", String, self.SubroutineStatusMessageCallback)
 		self.StatePub = rospy.Publisher('robot_state', String, queue_size=10)
 		self.subroutineStatus == 'idle'
+		self.lastTask = "dummyy task"
 		
 		rate = rospy.Rate(10) # Publish at 10hz
 		while not rospy.is_shutdown():
@@ -40,9 +41,11 @@ class robotStateNode():
 				subRoutineToKill = subRoutineToKill[0]
 				os.system(self.killSubroutines[subRoutineToKill])
 				self.taskStatus = "success"
-				self.StatePub.publish(self.taskStatus + " " + str(self.currentTask))
+				for i in range (0,100):
+					self.StatePub.publish(self.taskStatus + " " + str(self.currentTask))
+					rospy.sleep(0.03)
 				# If python uses pointers, fix this
-				self.lastTask = self.currentTask
+				#self.lastTask = self.currentTask
 				self.subroutineStatus = "idle"
 				self.taskStatus = "task_not_started"
 
@@ -74,11 +77,13 @@ class robotStateNode():
 		self.currentSubroutine = self.subroutines[taskWithParam[0]]
 		parameterString = ""
 		for i in range(1,len(taskWithParam)):
-			parameterString = parameterString + "P" + str(i) + ":=" + taskWithParam[i] + " "			# For each paramter convert it to a string to make it a system call
-		if (self.taskStatus != "in_progress" and self.lastTask != self.currentTask):
-			os.system(self.currentSubroutine + " " + parameterString)
-			print(self.currentSubroutine + " " + parameterString)
+			parameterString = parameterString + "P" + str(i) + ":=" + taskWithParam[i] + " &"			# For each paramter convert it to a string to make it a system call
+		#if (self.taskStatus != "in_progress" and self.lastTask != self.currentTask):
+		if (self.lastTask != self.currentTask):
+			print("\n\n\n\n\n\n" + self.currentTask +  self.currentSubroutine + " " + parameterString + "\n\n\n\n\n\n\n")
 			self.taskStatus = "in_progress"
+			self.lastTask = self.currentTask
+			os.system(self.currentSubroutine + " " + parameterString)
 			rate = rospy.Rate(10)
 			rate.sleep()
 
@@ -101,7 +106,7 @@ class robotStateNode():
 			'find_person' : 'roslaunch squirtle_speech squirtle_speech.launch',
 			# 'follow_person' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
 			# 'retrieve_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
-			# 'deliver_message' : '/home/siddharth/catkin_ws/src/CIS700_Squirtle/squirtle_navigation/launch/SquirtleNavigation.launch',
+			'deliver_message' : 'roslaunch squirtle_speech squirtle_speech.launch'
 		}
 
 		self.killSubroutines = {

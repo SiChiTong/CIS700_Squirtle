@@ -1,0 +1,16 @@
+<!-- Launch File Squirtle Arm Pick and Give Demo 
+Written By: Mayumi Mohan -->
+
+<launch>
+	<!-- Start Arm Launcher -->	
+	<include file="$(find squirtle_arm)/launch/squirtle_arm_bringup.launch"/>
+
+	<!-- Start moveIt -->
+	<include file="$(find turtlebot_arm_moveit_config)/launch/turtlebot_arm_moveit.launch">
+	<arg name="sim" value="false"/>
+	<!--<arg name="output" value="screen"/> -->
+	</include>
+        <!-- Run the pick and give... not place code -->
+        <node name="squirtleFlowerGreeting" pkg="squirtle_arm_kinematics" type="squirtleFlowerGreeting.py"/>
+
+</launch>

@@ -1,19 +1,93 @@
-This README contains the basc instructions for testing out the capabilities of squirtle for the intermediate task. Last updated - 3rd Nov.
+This README contains the basc instructions for testing out the capabilities of squirtle. Last updated Dec 16 2015
 
-Open Terminal
+--------------Terminal Commands to run Demos------------------ 
+Running Task Demo - 
+roslaunch squirtle_bringup squirtle_bringup_task_list.launch 
+
+Running Arm Demo -
+roslaunch squirtle_arm squirtle_arm_demo.launch
+
+Running Tabletop Detector - 
 roslaunch turtlebot_bringup minimal.launch
-New window - rosrun squirtle_utils tasklist.py
-New window - rosrun squirtle_utils robotStateNode.py
+roslaunch openni_launch openni.launch 
+rosrun opencv_files tabletop_detector 
 
-The above three windows are constant, and we do not edit them. The 
 
+
+-------------Some Debug and shortcut tips--------------------
 For speech tasks -
 To simulate the button actions - 
 New window - rostopic pubpub -r 5 /nexusMessage std_msgs/String button_not_pressed (It should keep shouting now) ctrl+C
 rostopic pubpub -r 5 /nexusMessage std_msgs/String button_pressed (It should stop shouting, and move on to the next task)
 
-For navigation tasks -
-Wait for the message "Odom received!" to appear on the terminal with the robotStateNode. Then open a new window and open rviz. Set the initial position of the robot through rviz.
-New window - rosrun squirtle_navigation destination.py. (Kill this node, once the robot starts moving)
+------------File Descriptions-------------------
+
+--classification_stuff--
+This folder contains files related to classification. It includes the Caffe files for Caffe: an open source Convolutional Neural Network.
+
+svm_example.py
+a simple example file demonstrating the appropriate calls for using an SVM in python
+
+classify.py 
+an out-of-the-box image classifer callable from the command line.
+By default it configures and runs the Caffe reference ImageNet model. 
+
+tryTrain1.py
+Model that uses caffe as a feature extractor and uses an SVM model for training
+
+workingTest.py
+Takes in an image as an argument, and uses caffe as a feature extractor and classifies the image through the trained svm classifier. 
+
+--downloader--
+this folder contains a script for downloading images
+
+image_grabber.py
+uses google api to download images from the internet
+
+
+--opencv_files--
+this folder contains several vision codes
+
+face_node.cpp
+a face detector using haar cascade templates 
+
+object_detector.cpp
+an object detector using sift features
+
+tabletop_node.cpp
+a kinect based object detector that extracts the principle plane using RANSAC and clusters points that sit above the plane.
+
+--squirtle_bringup--
+this folder contains launch files for some of our demos
+
+squirtle_bringup_task_list.launch
+runs our tasklist demo. This executes a sequence of tasks including finding a person, navigating, and retrieving a soda can.
+
+squirtle_bringup_voice_command.launch
+runs a one shot task demo. Squirtle receives a voice command, carries out the specified task, and awaits the next command.
+
+--squirtle_object_detection--
+obj_detection_status.py
+uses the tabletop detector and SVM to classify an object
+
+--squirtle_utils--
+listen_talk.py
+a sample publisher/subscriber implemented in python
+
+tasklist.py
+node that maintains the tasklist for our tasklist demo
+
+robotStateNode.py
+node that monitors the state of the robot. This node is the finite state machine of the robot that interfaces with the tasklist and the various subroutines.
+
+--squirtle_navigation--
+destinationPoint.py
+node tosend action service to move_base to move the robot to the location
+
+myPose.py
+node that subscribes to amcl_pose and keeps track of the robot's location in the map frame
+
+subroutineStatus.py
+node that checks the status of the navigation task and commnicates with the robotStateNode about the status of the navigation task
 
 
