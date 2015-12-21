@@ -90,4 +90,37 @@ node that subscribes to amcl_pose and keeps track of the robot's location in the
 subroutineStatus.py
 node that checks the status of the navigation task and commnicates with the robotStateNode about the status of the navigation task
 
+--squirtle_nexus--
+BTreceiver.py
+node to connect an Android device to NUC (refer to website)
+
+--squirtle_Android--
+Android app for Squirtle
+
+--squirtle_arm--
+squirtle_arm_demo.launch
+Launch file to run squirtle flower pick and place demo
+
+squirtle_arm_bringup.launch
+launch file to initialize the manipulator (refer to website for setup details)
+
+arm_arduino
+folder with arduino files for arm
+
+--squirtle_arm_kinematics--
+arm_Planning.py
+node to make manipulator got to a specific point
+
+sendArmPose.py
+publisher to send a target point to manipulator
+
+squirtle_FlowerGreeting.py
+Squirtle flower pick and place demo
+
+squirtleShakeHand.py
+squirtle Shake hand demo
+
+
+
+
 
